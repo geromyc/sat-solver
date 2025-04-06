@@ -1,4 +1,3 @@
----
 AlignConsecutiveAssignments: true
 AlignConsecutiveMacros:
   Enabled: true
@@ -24,4 +23,3 @@ SpaceBeforeParens: Custom
 SpaceBeforeParensOptions:
   AfterControlStatements: true
 SpaceBeforeSquareBrackets: false
----

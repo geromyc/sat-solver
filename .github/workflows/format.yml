@@ -6,6 +6,9 @@ name: Format
 on:
   push:
     branches-ignore: ["main"]
+    paths-ignore: ["minisat/**"]
+  pull_request:
+    paths-ignore: ["minisat/**"]
     
 permissions:
    contents: read
