@@ -1,0 +1,27 @@
+---
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: false
+AlignOperands: true
+AlignTrailingComments: true
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: false
+  AfterStruct: false
+  BeforeElse: true
+ColumnLimit: 90
+IndentCaseBlocks: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+PointerAlignment: Left
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+SpaceBeforeSquareBrackets: false
+---
