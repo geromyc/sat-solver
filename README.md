@@ -7,7 +7,7 @@ ECE51216 Group Project - Satisfiability solver with heuristic implementation of 
 * Adam Stefanyk
 
 # Developer Notes
-Function Comment Format (javadoc)
+#### Function Comment Format (javadoc)
 /**
 * Name of Author(s):
 * Detailed description of what function's purpose is
