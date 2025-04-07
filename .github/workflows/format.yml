@@ -7,15 +7,12 @@ on:
   push:
     branches-ignore: ["main"]
     paths:
-      - "**.cpp"
-      - "**.h"
-      - "!minisat/**"
+      - "src/**"
+
   pull_request:
     paths:
-      - "**.cpp"
-      - "**.h"
-      - "!minisat/**"
-    
+      - "src/**"
+
 permissions:
    contents: read
    statuses: write
