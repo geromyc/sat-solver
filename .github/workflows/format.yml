@@ -1,5 +1,5 @@
 # Author(s): Geromy Cunningham
-# Purpose: Check if formatting is correct on a push to any branch
+# Purpose: Check if formatting is correct on a push to any branch except main
 
 name: Format
 
@@ -8,8 +8,8 @@ on:
     branches-ignore: ["main"]
     
 permissions:
-   contents: read
-   statuses: write
+  contents: read
+  statuses: write
 
 jobs:
   format:
@@ -17,6 +17,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: clang-format check
         uses: jidicula/clang-format-action@v4.14.0
         with:
