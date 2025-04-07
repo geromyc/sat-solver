@@ -6,9 +6,16 @@ name: Format
 on:
   push:
     branches-ignore: ["main"]
-    paths-ignore: ["minisat/**", "minisat/**/**"]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '!minisat/**'
   pull_request:
-    paths-ignore: ["minisat/**", "minisat/**/**"]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '!minisat/**'
+
     
 permissions:
    contents: read
