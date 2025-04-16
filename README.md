@@ -18,3 +18,21 @@ ECE51216 Group Project - Satisfiability solver with heuristic implementation of 
 * @param Name of Input 2 Description of Input 2
 * @return Description of return value */
 ```
+## Putting it all together
+structures.h defines your CNF, Lit, Clause, and readDimacs.
+
+solver.h declares your Solver type and its entire public+private interface—importantly including all the little helpers you invoke.
+
+solver.cpp actually implements each method you declared in the header.
+
+main.cpp then does:
+
+CNF F = readDimacs(in);
+Solver solver(F);
+bool sat = solver.solve();
+With that split, each file compiles cleanly, and your build command (for example) becomes:
+
+```text
+g++ -std=c++17 -O2 main.cpp solver.cpp -o mySolver
+No more “missing include” or “undefined reference” errors, because every function you call in solver.h is both declared there and defined in solver.cpp. Hope that makes the role of solver.h crystal clear!
+```
