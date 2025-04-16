@@ -10,18 +10,30 @@
 #include <fstream>
 #include <iostream>
 
-#include "Dimacs.h"
 #include "solver.h"
+#include "structures.h"
 
 int main(int argc, char* argv[]) {
-  std::ifstream input_file(argv[1]);
-  parse_DIMACS(input_file, Solver & S, (bool)strictp);
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <cnf‑file>\n";
+    return 1;
+  }
 
-  Solver solver;
-  solver.load(dimacs); // method to convert parsed input into internal structures
+  std::ifstream in(argv[1]);
+  if (!in) {
+    std::cerr << "Cannot open " << argv[1] << "\n";
+    return 1;
+  }
 
-  bool result = solver.solve();
-  std::cout << (result ? "SAT" : "UNSAT") << std::endl;
+  // 1) Parse DIMACS into your CNF
+  CNF F = readDimacs(in);
 
+  // 2) Construct the solver, passing it the formula
+  Solver solver(F);
+
+  // 3) Call your DPLL routine
+  bool sat = solver.solve();
+
+  std::cout << (sat ? "SAT\n" : "UNSAT\n");
   return 0;
 }
