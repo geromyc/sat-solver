@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "basic_solver.h"
 #include "solver.h"
 #include "structures.h"
 
@@ -29,10 +30,17 @@ int main(int argc, char* argv[]) {
   CNF F = readDimacs(in);
 
   // 2) Construct the solver, passing it the formula
-  Solver solver(F);
+    // 2) Run the *base* DPLL solver
+    BasicSolver base(F);
+    bool sat_base = base.solve();
+    std::cout << "Base solver says: " << (sat_base ? "SAT\n" : "UNSAT\n");
+  // Has some heuristics applied.
+    // Solver solver(F);
 
   // 3) Call your DPLL routine
-  bool sat = solver.solve();
+  bool sat = base.solve();
+  
+  //bool sat = solver.solve();
 
   std::cout << (sat ? "SAT\n" : "UNSAT\n");
   return 0;
