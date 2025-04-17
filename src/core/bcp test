@@ -1,0 +1,136 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+struct Literal {
+    int var_id;
+    bool is_negated;
+
+    Literal(int id, bool neg) : var_id(id), is_negated(neg) {}
+
+    bool evaluate(const std::unordered_map<int, bool>& assignment) const {
+        auto it = assignment.find(var_id);
+        if (it == assignment.end()) return false;
+        return it->second != is_negated;
+    }
+
+    Literal negated() const {
+        return Literal(var_id, !is_negated);
+    }
+};
+
+struct Clause {
+    std::vector<Literal> literals;
+
+    Clause(std::initializer_list<Literal> lits) : literals(lits) {}
+
+    bool isSatisfied(const std::unordered_map<int, bool>& assignment) const {
+        size_t i = 0;
+        while (i < literals.size()) {
+            if (literals[i].evaluate(assignment)) return true;
+            ++i;
+        }
+        return false;
+    }
+
+    bool isUnit(const std::unordered_map<int, bool>& assignment, Literal& unitOut) const {
+        int unassignedCount = 0;
+        Literal candidate(0, false);
+        size_t i = 0;
+        while (i < literals.size()) {
+            auto it = assignment.find(literals[i].var_id);
+            if (it == assignment.end()) {
+                candidate = literals[i];
+                ++unassignedCount;
+                if (unassignedCount > 1) return false;
+            } else if (literals[i].evaluate(assignment)) {
+                return false;
+            }
+            ++i;
+        }
+        if (unassignedCount == 1) {
+            unitOut = candidate;
+            return true;
+        }
+        return false;
+    }
+
+    bool isConflict(const std::unordered_map<int, bool>& assignment) const {
+        size_t i = 0;
+        while (i < literals.size()) {
+            auto it = assignment.find(literals[i].var_id);
+            if (it == assignment.end() || literals[i].evaluate(assignment)) {
+                return false;
+            }
+            ++i;
+        }
+        return true;
+    }
+};
+
+class UnitPropagator {
+private:
+    std::vector<Clause> clauses;
+    std::unordered_map<int, bool> assignment;
+
+public:
+    UnitPropagator(std::vector<Clause> cls) : clauses(std::move(cls)) {}
+
+    void setInitial(int var_id, bool value) {
+        assignment[var_id] = value;
+    }
+
+    bool propagate() {
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            size_t i = 0;
+            while (i < clauses.size()) {
+                if (clauses[i].isConflict(assignment)) {
+                    std::cout << "❌ Conflict detected in clause " << i << "\n";
+                    return false;
+                }
+
+                Literal unitLit(0, false);
+                if (clauses[i].isUnit(assignment, unitLit)) {
+                    assignment[unitLit.var_id] = !unitLit.is_negated;
+                    std::cout << "✅ Unit propagated: x" << unitLit.var_id
+                              << " = " << (!unitLit.is_negated ? "true" : "false") << "\n";
+                    changed = true;
+                    break; // start over
+                }
+                ++i;
+            }
+        }
+        return true;
+    }
+
+    void printAssignment() const {
+        std::cout << "\nFinal assignment:\n";
+        for (const auto& [var, val] : assignment) {
+            std::cout << "x" << var << " = " << (val ? "true" : "false") << "\n";
+        }
+    }
+};
+
+int main() {
+    // Test CNF: (¬1 ∨ 2), (¬2 ∨ 3), (¬3), (1)
+    std::vector<Clause> cnf = {
+        Clause({Literal(1, true), Literal(2, false)}),
+        Clause({Literal(2, true), Literal(3, false)}),
+        Clause({Literal(3, true)}),
+        Clause({Literal(1, false)})
+    };
+
+    UnitPropagator up(cnf);
+    up.setInitial(1, true); // decision: x1 = true
+
+    if (up.propagate()) {
+        std::cout << "\n✅ Satisfiable under current assignment.\n";
+        up.printAssignment();
+    } else {
+        std::cout << "\n❌ UNSAT under current assignment.\n";
+    }
+
+    return 0;
+}
