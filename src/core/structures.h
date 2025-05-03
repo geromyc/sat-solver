@@ -29,8 +29,9 @@ struct CNF {
   // Build the occur‑list after you parse clauses:
   void buildOccur() {
     occur.assign(2 * (numVars + 1), {});
-    for (int ci = 0; ci < clauses.size(); ci++) {
-      for (auto& l : clauses[ci]) {
+    for (int ci = 0; ci < (int)clauses.size(); ci++) {
+      // must iterate over the vector of lits, not over Clause itself!
+      for (auto& l : clauses[ci].lits) {
         int idx = 2 * l.var + (l.neg ? 1 : 0);
         occur[idx].push_back(ci);
       }
@@ -38,7 +39,7 @@ struct CNF {
   }
 };
 
-CNF readDimacs(std::istream& in) {
+inline CNF readDimacs(std::istream& in) {
   CNF F;
   std::string line;
   while (std::getline(in, line)) {
