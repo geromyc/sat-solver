@@ -8,7 +8,9 @@ DPLLSolver::DPLLSolver(Formula f)
   _F.initWatches(_A, _useWatched);
 }
 
-/* Top‑level public entry -------------------------------------------------------- */
+/* ------------------------------------------------------------------ *
+ *  Top Level Entrypoint                                              *
+ * ------------------------------------------------------------------ */
 bool DPLLSolver::solve() {
   /* initial pure‑literal elimination + unit propagation */
   pureLiteralElimination();
@@ -18,7 +20,9 @@ bool DPLLSolver::solve() {
   return dpll();
 }
 
-/* ---------------------------- recursive core ---------------------------------- */
+/* ------------------------------------------------------------------ *
+ *  Recursive Core                                                    *
+ * ------------------------------------------------------------------ */
 bool DPLLSolver::dpll() {
   if (_F.allSatisfied(_A))
     return true;
@@ -41,7 +45,9 @@ bool DPLLSolver::dpll() {
   return false;
 }
 
-/* ------------------------------- utilities ------------------------------------ */
+/* ------------------------------------------------------------------ *
+ *  Utilities                                                         *
+ * ------------------------------------------------------------------ */
 void DPLLSolver::pureLiteralElimination() {
   bool changed;
   do {
@@ -56,28 +62,64 @@ void DPLLSolver::pureLiteralElimination() {
   } while (changed);
 }
 
+/* ------------------------------------------------------------------ *
+ *  Boolean Constraint Propagation                                    *
+ * ------------------------------------------------------------------ */
 bool DPLLSolver::unitPropagate() {
-  /* fill queue with initial unit clauses (slow scan) */
-  for (const auto& c : _F.clauses())
-    if (c.isUnit(_A))
-      _unitQueue.push_back(c.unitLit(_A));
+  if (_useWatched) { /* fast path with 2‑watched literals */
+    /* collect initial units ------------------------------- */
+    for (auto& c : _F.clauses())
+      if (c.isUnit(_A))
+        _unitQueue.push_back(c.unitLit(_A));
 
-  while (!_unitQueue.empty()) {
-    Lit l = _unitQueue.back();
-    _unitQueue.pop_back();
+    while (!_unitQueue.empty()) {
+      Lit l = _unitQueue.back();
+      _unitQueue.pop_back();
 
-    Val v = _A.valueLit(l);
-    if (v == TRUE)
-      continue;
-    if (v == FALSE)
-      return false; // conflict
-    _A.pushImplied(l);
+      Val v = _A.valueLit(l);
+      if (v == TRUE)
+        continue;
+      if (v == FALSE)
+        return false; // conflict
+      _A.pushImplied(l);
 
-    /* notify clauses if watched‑literal mode enabled */
-    for (auto& c : _F.clauses()) {
-      if (!c.onLiteralFalse(neg(l), _A, _unitQueue, _useWatched))
-        return false; // conflict detected
+      /* notify all clauses that watched !l disappeared */
+      for (auto& c : _F.clauses())
+        if (!c.onLiteralFalse(neg(l), _A, _unitQueue, true))
+          return false; // conflict
     }
+    return true;
+  }
+
+  /* ----------------------------------------------------------------
+   *  SIMPLE (O(n·m)) PROPAGATION when watched literals are OFF
+   * ---------------------------------------------------------------- */
+  while (true) {
+    bool anyChange = false;
+
+    for (const auto& c : _F.clauses()) {
+      if (c.isSatisfied(_A))
+        continue;
+
+      /* conflict? */
+      if (c.hasEmpty(_A))
+        return false;
+
+      /* unit clause? */
+      if (c.isUnit(_A)) {
+        Lit l = c.unitLit(_A);
+        Val v = _A.valueLit(l);
+
+        if (v == FALSE)
+          return false; // conflict
+        if (v == UNK) {
+          _A.pushImplied(l);
+          anyChange = true;
+        }
+      }
+    }
+    if (!anyChange)
+      break; // fixed point reached
   }
   return true;
 }

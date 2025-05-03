@@ -36,25 +36,23 @@ With that split, each file compiles cleanly, and your build command (for example
 # How-To-Run
 ##### Update your local files
 ```text
-git checkout main
+git checkout origin/main
 git pull
 ```
 git checkout *branch name you are working on*
 
-##### If you don't have the benchmark files in your local directory
+##### If you don't have the benchmark files unzipped
 ```text
-mkdir uf20-91
-mkdir uf50-218
+cd benchmarks/
+mkdir -p sat-solver/benchmarks/{uf20-91,uf50-218}
 ```
 ```text
-cd src/SATLIB/
 tar xzf uf20-91.tar.gz -C uf20-91
 ```
-===OR===
 ```text
-cd src/SATLIB/
 tar xzf uf50-218.tar.gz -C uf50-218
 ```
+
 ## Build
 # from the project root
 ```text
