@@ -60,18 +60,24 @@ private:
 
   // 2) Pure‐literal elimination
   void eliminatePureLiterals() {
-    std::vector<int> polarity(F.numVars + 1, 0);
-    // Mark which vars appear only as +lit or only as -lit
+    std::vector<char> seen(F.numVars + 1, 0);
+    // bit 1 = saw positive, bit 2 = saw negative
     for (auto& C : F.clauses) {
       for (auto& l : C.lits) {
-        if (value[l.var] == 0)
-          polarity[l.var] |= (l.neg ? -1 : +1);
+        if (value[l.var] == 0) {
+          if (l.neg)
+            seen[l.var] |= 2;
+          else
+            seen[l.var] |= 1;
+        }
       }
     }
-    // Enqueue each pure literal
     for (int v = 1; v <= F.numVars; v++) {
-      if (value[v] == 0 && polarity[v] != 0) {
-        enqueue({v, polarity[v] == -1});
+      if (value[v] == 0) {
+        if (seen[v] == 1)
+          enqueue({v, false}); // pure +v
+        else if (seen[v] == 2)
+          enqueue({v, true}); // pure ¬v
       }
     }
   }

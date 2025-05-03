@@ -32,7 +32,11 @@ Solver solver(F);
 bool sat = solver.solve();
 With that split, each file compiles cleanly, and your build command (for example) becomes:
 
+
+### How to run
+git checkout main
+git pull
+git checkout 
 ```text
 g++ -std=c++17 -O2 main.cpp solver.cpp -o mySolver
-No more “missing include” or “undefined reference” errors, because every function you call in solver.h is both declared there and defined in solver.cpp. Hope that makes the role of solver.h crystal clear!
 ```
