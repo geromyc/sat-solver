@@ -33,7 +33,7 @@ bool sat = solver.solve();
 With that split, each file compiles cleanly, and your build command (for example) becomes:
 
 
-## How to run
+# How to run
 ##### Update your local files
 ```text
 git checkout main
@@ -55,10 +55,3 @@ tar xzf uf20-91.tar.gz -C uf20-91
 cd src/SATLIB/
 tar xzf uf50-218.tar.gz -C uf50-218
 ```
-
-```text
-cd src/core/
-g++ -std=c++17 -O2 main.cpp solver.cpp -o mySolver
-```
-
-./mySolver ../SATLIB/folder_name/file_name.cnf

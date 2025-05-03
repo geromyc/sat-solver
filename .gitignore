@@ -32,5 +32,5 @@
 *.app
 
 # Libraries
-src/SATLIB/uf20-91/*
-src/SATLIB/uf50-218/*
+SATLIB/uf20-91/*
+SATLIB/uf50-218/*
