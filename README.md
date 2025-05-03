@@ -33,7 +33,7 @@ bool sat = solver.solve();
 With that split, each file compiles cleanly, and your build command (for example) becomes:
 
 
-# How to run
+# How-To-Run
 ##### Update your local files
 ```text
 git checkout main
@@ -55,3 +55,17 @@ tar xzf uf20-91.tar.gz -C uf20-91
 cd src/SATLIB/
 tar xzf uf50-218.tar.gz -C uf50-218
 ```
+## Build
+# from the project root
+```text
+g++ -std=c++17 -O3 -Wall -Iinclude src/*.cpp -o mySAT
+```
+
+# Run (plain)
+./mySAT ../../benchmarks/uf20-01.cnf
+
+# Run with watched literals
+SAT_USE_WATCHED=1 ./mySAT ../../benchmarks/uf50-218.cnf
+
+# Run with both watched + CDCL (once you implement CDCL)
+SAT_USE_WATCHED=1 SAT_USE_CDCL=1 ./mySAT hard.cnf
