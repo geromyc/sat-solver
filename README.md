@@ -62,10 +62,8 @@ g++ -std=c++17 -O3 -Wall -Iinclude src/*.cpp -o mySAT
 ```
 
 # Run (plain)
-./mySAT ../../benchmarks/uf20-01.cnf
+./mySAT benchmarks/uf20-91/uf20-01.cnf
 
-# Run with watched literals
-SAT_USE_WATCHED=1 ./mySAT ../../benchmarks/uf50-218.cnf
-
-# Run with both watched + CDCL (once you implement CDCL)
-SAT_USE_WATCHED=1 SAT_USE_CDCL=1 ./mySAT hard.cnf
+# watched literals (export before run)
+export SAT_USE_WATCHED=1
+./mySAT benchmarks/uf50-218/uf50-218.cnf

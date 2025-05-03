@@ -20,6 +20,7 @@ public:
 
   /* pure literal elimination – returns the vector of pure literals ------------- */
   std::vector<Lit> gatherPureLiterals(const Assignment&) const;
+  std::vector<Clause>& clauses() { return _clauses; }
 
   Clause& operator[](size_t i) { return _clauses[i]; }
   const Clause& operator[](size_t i) const { return _clauses[i]; }

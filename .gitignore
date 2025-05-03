@@ -34,3 +34,5 @@
 # Libraries
 benchmarks/uf20-91/*
 benchmarks/uf50-218/*
+documents/minisat/**
+mySAT
