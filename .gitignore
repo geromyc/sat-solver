@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Libraries
+src/SATLIB/uf20-91/*
+src/SATLIB/uf50-218/*
