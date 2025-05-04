@@ -5,7 +5,7 @@
 
 class DPLLSolver {
 public:
-  std::vector<Lit> _unitQ;         // propagation queue (watched mode)
+  std::vector<Lit> _unitQ; // propagation queue (watched mode)
   explicit DPLLSolver(Formula f);
   bool solve();
   const Assignment& model() const { return _A; }
@@ -31,5 +31,5 @@ private:
   bool _useCDCL;
   bool _useDLIS;
   bool _useVSIDS;
-  bool _lastConflict;              // needed by VSIDS bumping
+  bool _lastConflict; // needed by VSIDS bumping
 };

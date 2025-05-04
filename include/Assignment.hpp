@@ -12,8 +12,7 @@ public:
   Val valueVar(int v) const { return _val[v]; }
   Val valueLit(Lit l) const { return l > 0 ? _val[l] : Val(1 ^ _val[-l]); }
   // alias expected by Heuristics.cpp
-  inline Val value(int v) const { return valueVar(v); }   // or `_val[v]` if you prefer
-
+  inline Val value(int v) const { return valueVar(v); } // or `_val[v]` if you prefer
 
   void setLit(Lit l) { _val[var(l)] = l > 0 ? TRUE : FALSE; }
 

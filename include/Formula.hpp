@@ -26,9 +26,10 @@ public:
   const Clause& operator[](size_t i) const { return _clauses[i]; }
 
   const std::vector<Clause>& clauses() const { return _clauses; }
+
   // used by DLIS/VSIDS
   inline size_t varCount() const { return maxVar(); }
-  
+
 private:
   std::vector<Clause> _clauses;
 };

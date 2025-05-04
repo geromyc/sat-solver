@@ -1,5 +1,5 @@
 #include "CDCL.hpp"
-#ifdef SAT_USE_CDCL         // same guard
+#ifdef SAT_USE_CDCL // same guard
 #include "Clause.hpp"
 
 // VERY reduced CDCL skeleton: learns unit clause on first conflict
