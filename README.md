@@ -45,18 +45,18 @@ g++ -std=c++17 -O3 -Wall -Iinclude src/*.cpp -o mySAT
 ```
 ### Run (plain)
 ```text
-./mySAT benchmarks/uf20-91/uf20-01.cnf
+./mySAT benchmarks/foldername/filename
 ```
-### watched literals (export before run)
+### Watched literals (export before run)
 ```text
 export SAT_USE_WATCHED=1
-./mySAT benchmarks/uf50-218/uf50-01.cnf
+./mySAT benchmarks/foldername/filename
 ```
 ### Run bulk script
 ```text
-./bulktest.sh
+./bulktest.sh benchmarks/foldername
 ```
 ### Bulk script w/time
 ```text
-time ./bulktest.sh
+time ./bulktest.sh benchmarks/foldername
 ```

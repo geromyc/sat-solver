@@ -7,20 +7,28 @@ int main(int argc, char** argv) {
     std::cerr << "usage: " << argv[0] << "  <file.cnf>\n";
     return 1;
   }
+
   try {
     Formula F = parseDIMACS(argv[1]);
     DPLLSolver solver(std::move(F));
+    const bool sat    = solver.solve();
+    const auto& model = solver.model().raw(); // 0‑index dummy entry
 
-    bool sat = solver.solve();
-    std::cout << (sat ? "SAT\n" : "UNSAT\n");
     if (sat) {
-      const auto& M = solver.model().raw();
-      for (size_t v = 1; v < M.size(); ++v)
-        std::cout << (M[v] == TRUE ? v : -int(v)) << " ";
-      std::cout << "0\n";
+      std::cout << "RESULT:SAT\nASSIGNMENT:";
+      for (size_t v = 1; v < model.size(); ++v) {
+        int bit = (model[v] == TRUE ? 1 : 0);
+        std::cout << v << '=' << bit;
+        if (v + 1 < model.size())
+          std::cout << ' ';
+      }
+      std::cout << '\n';
+    }
+    else {
+      std::cout << "RESULT:UNSAT\n";
     }
   } catch (const std::exception& e) {
-    std::cerr << "error: " << e.what() << "\n";
+    std::cerr << "error: " << e.what() << '\n';
     return 2;
   }
   return 0;
