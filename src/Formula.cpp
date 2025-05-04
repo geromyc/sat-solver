@@ -15,6 +15,7 @@ bool Formula::allSatisfied(const Assignment& a) const {
       return false;
   return true;
 }
+
 bool Formula::hasEmptyClause(const Assignment& a) const {
   for (const auto& c : _clauses)
     if (c.hasEmpty(a))

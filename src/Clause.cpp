@@ -10,12 +10,14 @@ bool Clause::isSatisfied(const Assignment& a) const {
       return true;
   return false;
 }
+
 bool Clause::hasEmpty(const Assignment& a) const {
   for (Lit l : _lits)
     if (a.valueLit(l) != FALSE)
       return false;
   return true;
 }
+
 bool Clause::isUnit(const Assignment& a) const {
   Lit unassigned = 0;
   for (Lit l : _lits) {
@@ -30,6 +32,7 @@ bool Clause::isUnit(const Assignment& a) const {
   }
   return unassigned != 0;
 }
+
 Lit Clause::unitLit(const Assignment& a) const {
   for (Lit l : _lits)
     if (a.valueLit(l) == UNK)
