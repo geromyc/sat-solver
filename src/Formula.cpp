@@ -30,23 +30,23 @@ void Formula::initWatches(Assignment& a, bool useWatched) {
 
 std::vector<Lit> Formula::gatherPureLiterals(const Assignment& a) const {
   std::unordered_map<int, int> mask; // var -> bitmask(positive=1, negative=2)
+
   for (const auto& c : _clauses) {
-    if (c.isSatisfied(a))
-      continue;
+    // do NOT skip any literal based on assignment:
     for (Lit l : c.lits()) {
-      int v = var(l);
-      if (a.valueVar(v) != UNK)
-        continue;
+      const int v = var(l);
+      // Mark that v has appeared with this sign
       int& m = mask[v];
       m |= (l > 0 ? 1 : 2);
     }
   }
+
   std::vector<Lit> out;
-  for (auto& [v, m] : mask) {
-    if (m == 1)
-      out.push_back(Lit(v)); // only positive
-    if (m == 2)
-      out.push_back(Lit(-v)); // only negative
+  for (auto& [v, bits] : mask) {
+    if (bits == 1)
+      out.push_back(+v); // only positive
+    if (bits == 2)
+      out.push_back(-v); // only negative
   }
   return out;
 }

@@ -46,17 +46,19 @@ bool DPLLSolver::dpll() {
     }
   }
 #endif
+
   /* ------------------- terminal checks -------------------------- */
-  if (_F.allSatisfied(_A))
-    return true;
+  if (_F.allSatisfied(_A)) {
+    return true; // No need to check all variables - pure literal elimination is part of
+                 // base DPLL
+  }
   if (_F.hasEmptyClause(_A))
     return false;
 
-  /* ------------------- choose branching literal ----------------- */
+  /* ------------------- normal DPLL split ------------------------ */
   Lit decision = chooseBranchLiteral();
   size_t lvl   = _A.currLevel();
 
-  /* ------------------- normal DPLL split ------------------------ */
   _A.pushDecision(decision);
   if (unitPropagate() && dpll())
     return true;

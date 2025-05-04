@@ -1,7 +1,8 @@
 #pragma once
-#include "CoreTypes.hpp"
 #include <vector>
 
+#include "Clause.hpp"
+#include "CoreTypes.hpp"
 class Assignment {
 public:
   explicit Assignment(size_t nVars = 0) : _val(nVars + 1, UNK) {}
@@ -10,7 +11,8 @@ public:
 
   /* query / update parcially assigned literals --------------------------------- */
   Val valueVar(int v) const { return _val[v]; }
-  Val valueLit(Lit l) const { return l > 0 ? _val[l] : Val(1 ^ _val[-l]); }
+  Val valueLit(Lit l) const;
+
   // alias expected by Heuristics.cpp
   inline Val value(int v) const { return valueVar(v); } // or `_val[v]` if you prefer
 
@@ -24,6 +26,33 @@ public:
 
   const std::vector<Lit>& trail() const { return _trail; }
   const std::vector<Val>& raw() const { return _val; }
+
+  Lit lastDecisionLit() const {
+    if (_levelPos.size() <= 1) // no decisions
+      return 0;
+    size_t lastDecLevel = _levelPos[_levelPos.size() - 1];
+    return _trail[lastDecLevel];
+  }
+
+  bool isComplete() const {
+    for (size_t v = 1; v < _val.size(); ++v)
+      if (_val[v] == UNK)
+        return false;
+    return true;
+  }
+
+  void backjump(size_t newLevel) { backtrackTo(newLevel); }
+
+  void assign(Lit l, size_t dl, const Clause*) {
+    if (dl > currLevel()) {
+      // Add new level
+      _levelPos.push_back(_trail.size());
+    }
+    _trail.push_back(l);
+    setLit(l);
+  }
+
+  size_t decisionLevel() const { return currLevel(); }
 
 private:
   std::vector<Val> _val;            // 1‑based index

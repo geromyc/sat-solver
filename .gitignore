@@ -31,8 +31,12 @@
 *.out
 *.app
 
+# Ignore folders
+documents/minisat/
+mySAT
+
 # Libraries
 benchmarks/uf20-91/*
 benchmarks/uf50-218/*
-documents/minisat/
-mySAT
+benchmarks/uf75-325/*
+benchmarks/AIM/*

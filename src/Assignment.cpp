@@ -1,6 +1,13 @@
 #include "Assignment.hpp"
 
-/* ---------- trail helpers ------------------------------------------------------ */
+Val Assignment::valueLit(Lit l) const {
+  Val v = _val[std::abs(l)];
+  if (v == UNK) // still unassigned? → UNK
+    return UNK;
+  // otherwise return v (if literal is positive) or its negation
+  return (l > 0) ? v : (v == TRUE ? FALSE : TRUE);
+}
+
 void Assignment::pushDecision(Lit l) {
   _levelPos.push_back(_trail.size());
   _trail.push_back(l);

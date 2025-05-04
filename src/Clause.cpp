@@ -56,18 +56,21 @@ bool Clause::onLiteralFalse(Lit falsed,
                             std::vector<Lit>& unitQ,
                             bool useWatched) {
   if (!useWatched || _lits.size() < 2)
-    return true; // nothing to do
+    return true;
 
-  int& watch =
-      (_lits[_wa] == falsed ? _wa
-                            : (_lits[_wb] == falsed ? _wb : _wa)); // which watch hit
+  /* if we are **not** watching this literal, nothing to do */
+  if (_lits[_wa] != falsed && _lits[_wb] != falsed)
+    return true;
+
+  /* identify which watch hit */
+  int& watch = (_lits[_wa] == falsed ? _wa : _wb);
 
   /* try to find replacement literal */
   for (size_t k = 0; k < _lits.size(); ++k) {
-    if (k == _wa || k == _wb)
+    if (k == static_cast<size_t>(_wa) || k == static_cast<size_t>(_wb))
       continue;
     if (asgn.valueLit(_lits[k]) != FALSE) {
-      watch = (int)k; // move watch
+      watch = static_cast<int>(k); // move watch
       return true;
     }
   }

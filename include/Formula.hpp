@@ -1,6 +1,7 @@
 #pragma once
 #include "Assignment.hpp"
 #include "Clause.hpp"
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -16,7 +17,6 @@ public:
 
   /* ---- helpers for algorithms ------------------------------------------------ */
   void initWatches(Assignment&, bool useWatched);
-  void collectClausesWithLit(Lit l, std::vector<size_t>& idxOut) const;
 
   /* pure literal elimination – returns the vector of pure literals ------------- */
   std::vector<Lit> gatherPureLiterals(const Assignment&) const;
@@ -29,6 +29,30 @@ public:
 
   // used by DLIS/VSIDS
   inline size_t varCount() const { return maxVar(); }
+
+  std::optional<const Clause*> unitPropagate(Assignment& a) {
+    bool changed;
+    do {
+      changed = false;
+      for (const auto& c : _clauses) {
+        if (c.isSatisfied(a))
+          continue;
+        if (c.hasEmpty(a))
+          return &c; // Conflict
+        if (c.isUnit(a)) {
+          Lit l = c.unitLit(a);
+          Val v = a.valueLit(l);
+          if (v == FALSE)
+            return &c; // Conflict
+          if (v == UNK) {
+            a.pushImplied(l);
+            changed = true;
+          }
+        }
+      }
+    } while (changed);
+    return std::nullopt; // No conflict
+  }
 
 private:
   std::vector<Clause> _clauses;

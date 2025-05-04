@@ -24,8 +24,6 @@ private:
   Formula _F;
   Assignment _A;
 
-  std::vector<Lit> _unitQueue;
-
   /* run‑time heuristics toggled by env vars ------------------------------------ */
   bool _useWatched;
   bool _useCDCL;
