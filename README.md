@@ -54,14 +54,23 @@ tar xzf uf50-218.tar.gz -C uf50-218
 ```
 
 ## Build
-# from the project root
+### from the project root
 ```text
 g++ -std=c++17 -O3 -Wall -Iinclude src/*.cpp -o mySAT
 ```
 
-# Run (plain)
+### Run (plain)
 ./mySAT benchmarks/uf20-91/uf20-01.cnf
 
-# watched literals (export before run)
+### watched literals (export before run)
 export SAT_USE_WATCHED=1
 ./mySAT benchmarks/uf50-218/uf50-218.cnf
+
+### Run bulk script
+```text
+./bulktest.sh
+```
+### Bulk script w/time
+```text
+time ./bulktest.sh
+```
