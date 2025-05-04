@@ -3,9 +3,14 @@
 # Bulk-run mySAT on one or more benchmark folders.
 # Usage:  ./bulktest.sh benchmarks/uf20-91 benchmarks/uf50-218
 # If no arguments are given, it defaults to every *.cnf under ./benchmarks.
-
 #set -e                     # exit on script error
-export SAT_USE_WATCHED=1   # comment out for naïve propagation
+# NOTE: DLIS > VSIDS if both are enabled
+# comment out for base DPLL
+export SAT_USE_WATCHED=1
+export SAT_USE_CDCL=1
+export SAT_USE_DLIS=1
+export SAT_USE_VSIDS=1
+
 
 dirs=("$@")
 [[ ${#dirs[@]} -eq 0 ]] && dirs=(benchmarks)
