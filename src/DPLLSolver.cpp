@@ -20,12 +20,14 @@ DPLLSolver::DPLLSolver(Formula f)
  *  Top Level Entrypoint                                              *
  * ------------------------------------------------------------------ */
 bool DPLLSolver::solve() {
-  /* initial pure‑literal elimination + unit propagation */
   pureLiteralElimination();
   if (!unitPropagate())
     return false;
 
-  return dpll();
+  const bool sat = dpll();
+  if (sat) // fill any “don’t‑care” holes deterministically
+    _A.fillUnassignedFalse();
+  return sat;
 }
 
 /* ------------------------------------------------------------------ *

@@ -19,13 +19,20 @@ void Assignment::pushImplied(Lit l) {
   setLit(l);
 }
 
+/* Assignment.hpp / .cpp  ------------------------------------------- */
+void Assignment::fillUnassignedFalse() {
+  for (size_t v = 1; v < _val.size(); ++v)
+    if (_val[v] == UNK)
+      _val[v] = FALSE;
+}
+
 void Assignment::backtrackTo(size_t lvl) {
   assert(lvl < _levelPos.size());
   size_t newTrailSz = _levelPos[lvl]; // first lit *of* lvl
 
   // walk backwards, undoing assignments
   for (size_t i = _trail.size(); i > newTrailSz; --i) {
-    _val[var(_trail[i-1])] = UNK;
+    _val[var(_trail[i - 1])] = UNK;
   }
   _trail.resize(newTrailSz);
   _levelPos.resize(lvl + 1);

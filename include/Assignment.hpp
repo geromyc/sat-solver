@@ -20,8 +20,9 @@ public:
   /* --- trail management (decision levels) --- */
   void pushDecision(Lit l);          // add decision literal
   void pushImplied(Lit l);           // add implied literal
+  void fillUnassignedFalse();        // set all UNK to FALSE
   void backtrackTo(size_t newLevel); // pop until size == levelPositions[newLevel]
-  Lit  lastDecisionLit() const;      // *first* lit of current level
+  Lit lastDecisionLit() const;       // *first* lit of current level
   size_t currLevel() const { return _levelPos.size() - 1; }
 
   const std::vector<Lit>& trail() const { return _trail; }

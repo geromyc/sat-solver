@@ -19,11 +19,22 @@ void initHeuristicFlags() {
  *  Plain DPLL fallback : first unassigned literal               *
  * ------------------------------------------------------------ */
 Lit chooseLiteral_DPLL(const Formula& F, const Assignment& A) {
-  for (const auto& c : F.clauses())
-    for (Lit l : c.lits())
-      if (A.valueVar(var(l)) == UNK)
-        return l;
-  return 0; // should never happen
+  Lit firstUnk = 0;
+  for (const Clause& c : F.clauses()) {
+    if (c.isSatisfied(A))
+      continue;
+    for (Lit l : c.lits()) {
+      if (A.valueVar(var(l)) == UNK) {
+        return l; // split on first open literal
+      }
+    }
+  }
+  // F is satisfied ⇢ caller should already have returned SAT
+  // defensive fallback:
+  for (int v = 1; v <= (int)F.varCount(); ++v)
+    if (A.valueVar(v) == UNK)
+      return Lit(v); // arbitrary
+  return 0;
 }
 
 /* ------------------------------------------------------------ *

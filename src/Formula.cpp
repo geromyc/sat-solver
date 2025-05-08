@@ -49,25 +49,25 @@ const Clause* Formula::unitPropagate(Assignment& a) {
   return nullptr; // No conflict
 };
 
-std::vector<Lit> Formula::gatherPureLiterals(const Assignment& a) const {
-  std::unordered_map<int, int> mask; // var -> bitmask(positive=1, negative=2)
+std::vector<Lit> Formula::gatherPureLiterals(const Assignment& A) const {
+  std::unordered_map<int, int> mask; // var → bitmask(positive=1, negative=2)
 
   for (const auto& c : _clauses) {
-    // do NOT skip any literal based on assignment:
+    if (c.isSatisfied(A))
+      continue; // skip satisfied clauses
     for (Lit l : c.lits()) {
-      const int v = var(l);
-      // Mark that v has appeared with this sign
-      int& m = mask[v];
-      m |= (l > 0 ? 1 : 2);
+      if (A.valueVar(var(l)) != UNK)
+        continue; // skip assigned vars
+      mask[var(l)] |= (l > 0 ? 1 : 2);
     }
   }
 
   std::vector<Lit> out;
-  for (auto& [v, bits] : mask) {
+  for (auto [v, bits] : mask) {
     if (bits == 1)
-      out.push_back(+v); // only positive
+      out.push_back(+v);
     if (bits == 2)
-      out.push_back(-v); // only negative
+      out.push_back(-v);
   }
   return out;
 }
