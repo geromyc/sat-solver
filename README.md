@@ -6,6 +6,61 @@ ECE51216 Group Project - Satisfiability solver with heuristic implementation of 
 * Jonathan Lloyd
 * Adam Stefanyk
 
+# How-To-Run
+##### Update your local files (from remote/GitHub)
+```text
+git checkout main
+git pull
+git checkout *branch name you are working on*
+```
+##### If you don't have the benchmark files unzipped
+```text
+mkdir -p sat-solver/benchmarks/{uf20-91,uf50-218}
+cd benchmarks/
+```
+```text
+tar xzf uf20-91.tar.gz -C uf20-91
+```
+```text
+tar xzf uf50-218.tar.gz -C uf50-218
+```
+
+## Build
+### From the project root
+```text
+g++ -std=c++17 -O3 -Wall -Iinclude src/*.cpp -o mySAT
+```
+### Run (plain)
+```text
+./mySAT benchmarks/foldername/filename
+```
+Within the bulk script, you can add/remove the # in front of the export environment variables.
+Alternatively you can highlight them all and press ctrl+/ to comment/uncomment them all.
+### Run bulk script
+```text
+./bulktest.sh benchmarks/foldername
+```
+### Bulk script w/time
+The time pre-environment variable can be used for single cases as well, but will likely show up better within bulk runs.
+```text
+time ./bulktest.sh benchmarks/foldername
+```
+
+# Heuristics (export before run)
+0 = default/off   ;   1 = on
+
+##### enable watched literals only
+SAT_USE_WATCHED=1 ./mySAT example.cnf
+
+##### baseline + DLIS decision heuristic
+SAT_USE_DLIS=1 ./mySAT example.cnf
+
+##### baseline + VSIDS
+SAT_USE_VSIDS=1 ./mySAT example.cnf
+
+##### watched literals + VSIDS + CDCL
+SAT_USE_WATCHED=1 SAT_USE_VSIDS=1 SAT_USE_CDCL=1 ./mySAT example.cnf
+
 # Developer Notes
 #### Function Comment Format (javadoc)
 ```text
@@ -17,22 +72,4 @@ ECE51216 Group Project - Satisfiability solver with heuristic implementation of 
 * @param Name of Input 1 Description of Input 1
 * @param Name of Input 2 Description of Input 2
 * @return Description of return value */
-```
-## Putting it all together
-structures.h defines your CNF, Lit, Clause, and readDimacs.
-
-solver.h declares your Solver type and its entire public+private interface—importantly including all the little helpers you invoke.
-
-solver.cpp actually implements each method you declared in the header.
-
-main.cpp then does:
-
-CNF F = readDimacs(in);
-Solver solver(F);
-bool sat = solver.solve();
-With that split, each file compiles cleanly, and your build command (for example) becomes:
-
-```text
-g++ -std=c++17 -O2 main.cpp solver.cpp -o mySolver
-No more “missing include” or “undefined reference” errors, because every function you call in solver.h is both declared there and defined in solver.cpp. Hope that makes the role of solver.h crystal clear!
 ```
