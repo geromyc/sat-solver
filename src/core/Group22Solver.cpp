@@ -1,144 +1,286 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <vector>
 #include <unordered_map>
-#include <optional>
-#include <string>
+#include <unordered_set>
+#include <queue>
+#include <stack>
+#include <fstream>
+#include <sstream>
 #include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <limits>
 
-using Clause = std::vector<int>;
-using CNF = std::vector<Clause>;
-using Assignment = std::unordered_map<int, bool>;
+using namespace std;
+using namespace chrono;
 
-bool is_clause_satisfied(const Clause& clause, const Assignment& assignment) {
-    for (int literal : clause) {
-        int var = abs(literal);
-        if (assignment.find(var) != assignment.end()) {
-            if (assignment.at(var) != (literal < 0)) return true;
+struct Clause {
+    vector<int> literals;
+};
+
+int numVars, numClauses;
+vector<Clause> clauses;
+vector<vector<int>> watches; // watched literals
+vector<int> assignment; // -1 = unassigned, 0 = false, 1 = true
+vector<int> decisionLevel;
+vector<int> implicationVar;
+vector<vector<int>> reasons;
+vector<double> activity; // for VSIDS
+double decay = 0.95;
+int currentLevel = 0;
+int conflictCount = 0;
+
+const int UNASSIGNED = -1;
+const int FALSE = 0;
+const int TRUE = 1;
+
+int pickBranchVar() {
+    double maxScore = -1;
+    int bestVar = -1;
+    for (int i = 1; i <= numVars; i++) {
+        if (assignment[i] == UNASSIGNED) {
+            if (activity[i] > maxScore) {
+                maxScore = activity[i];
+                bestVar = i;
+            }
         }
     }
-    return false;
+    return bestVar;
 }
 
-std::optional<Assignment> unit_propagate(const CNF& cnf, Assignment assignment) {
-    bool changed = true;
-    while (changed) {
-        changed = false;
-        for (const Clause& clause : cnf) {
-            int unassigned_count = 0;
-            int last_unassigned = 0;
-            bool satisfied = false;
+void bumpActivity(int var) {
+    activity[var] += 1.0;
+}
 
-            for (int lit : clause) {
-                int var = abs(lit);
-                if (assignment.find(var) == assignment.end()) {
-                    ++unassigned_count;
-                    last_unassigned = lit;
-                } else if (assignment[var] != (lit < 0)) {
-                    satisfied = true;
+void decayActivities() {
+    for (int i = 1; i <= numVars; i++) {
+        activity[i] *= ::decay;
+    }
+}
+
+bool addWatch(int lit, int clauseIndex) {
+    watches[lit + numVars].push_back(clauseIndex);
+    return true;
+}
+
+void parseCNF(const string& filename) {
+    ifstream file(filename);
+    if (!file) {
+        cerr << "Failed to open CNF file.\n";
+        exit(1);
+    }
+
+    string line;
+    while (getline(file, line)) {
+        if (line.empty() || line[0] == 'c') continue;
+        if (line[0] == 'p') {
+            string tmp;
+            stringstream ss(line);
+            ss >> tmp >> tmp >> numVars >> numClauses;
+            assignment.assign(numVars + 1, UNASSIGNED);
+            decisionLevel.assign(numVars + 1, 0);
+            implicationVar.assign(numVars + 1, 0);
+            reasons.assign(numVars + 1, vector<int>());
+            watches.assign(2 * numVars + 1, vector<int>());
+            activity.assign(numVars + 1, 0.0);
+        } else {
+            stringstream ss(line);
+            int lit;
+            Clause clause;
+            while (ss >> lit && lit != 0) {
+                clause.literals.push_back(lit);
+            }
+            int clauseIndex = clauses.size();
+            clauses.push_back(clause);
+            if (clause.literals.size() >= 1) addWatch(clause.literals[0], clauseIndex);
+            if (clause.literals.size() >= 2) addWatch(clause.literals[1], clauseIndex);
+        }
+    }
+}
+
+bool unitPropagate(int& conflictClauseIndex) {
+    queue<int> unitQueue;
+    for (int var = 1; var <= numVars; var++) {
+        if (assignment[var] != UNASSIGNED) {
+            int lit = assignment[var] == TRUE ? var : -var;
+            unitQueue.push(lit);
+        }
+    }
+
+    while (!unitQueue.empty()) {
+        int lit = unitQueue.front();
+        unitQueue.pop();
+        int watchIdx = -lit + numVars;
+
+        vector<int> tempWatch = watches[watchIdx];
+        watches[watchIdx].clear();
+
+        for (int clauseIndex : tempWatch) {
+            Clause& clause = clauses[clauseIndex];
+            bool foundNewWatch = false;
+
+            for (int alt : clause.literals) {
+                if (alt != lit && (assignment[abs(alt)] == UNASSIGNED || 
+                    (assignment[abs(alt)] == TRUE && alt > 0) || 
+                    (assignment[abs(alt)] == FALSE && alt < 0))) {
+                    addWatch(alt, clauseIndex);
+                    foundNewWatch = true;
                     break;
                 }
             }
 
-            if (satisfied) continue;
-            if (unassigned_count == 0) return std::nullopt;
+            if (!foundNewWatch) {
+                int cntUnassigned = 0, lastUnassigned = 0;
+                bool clauseSat = false;
+                for (int l : clause.literals) {
+                    if ((l > 0 && assignment[l] == TRUE) || (l < 0 && assignment[-l] == FALSE)) {
+                        clauseSat = true;
+                        break;
+                    }
+                    if (assignment[abs(l)] == UNASSIGNED) {
+                        cntUnassigned++;
+                        lastUnassigned = l;
+                    }
+                }
 
-            if (unassigned_count == 1) {
-                int var = abs(last_unassigned);
-                bool value = last_unassigned > 0;
-                assignment[var] = value;
-                changed = true;
+                if (clauseSat) {
+                    addWatch(lit, clauseIndex);
+                } else if (cntUnassigned == 1) {
+                    assignment[abs(lastUnassigned)] = lastUnassigned > 0 ? TRUE : FALSE;
+                    decisionLevel[abs(lastUnassigned)] = currentLevel;
+                    unitQueue.push(lastUnassigned);
+                    implicationVar[abs(lastUnassigned)] = clauseIndex;
+                    addWatch(lit, clauseIndex);
+                } else {
+                    conflictClauseIndex = clauseIndex;
+                    return false;
+                }
             }
         }
     }
-    return assignment;
+
+    return true;
 }
 
-int choose_variable(const CNF& cnf, const Assignment& assignment) {
-    for (const Clause& clause : cnf) {
-        for (int lit : clause) {
-            int var = abs(lit);
-            if (assignment.find(var) == assignment.end()) return var;
+vector<int> analyzeConflict(int conflictClauseIndex, int& backtrackLevel) {
+    Clause& conflictClause = clauses[conflictClauseIndex];
+    unordered_set<int> seen;
+    vector<int> learned;
+    stack<int> stk;
+    int counter = 0;
+
+    for (int lit : conflictClause.literals) {
+        int var = abs(lit);
+        if (decisionLevel[var] == currentLevel) {
+            counter++;
+        }
+        if (!seen.count(var)) {
+            seen.insert(var);
+            stk.push(var);
         }
     }
-    return 0;
-}
 
-std::optional<Assignment> dpll(const CNF& cnf, Assignment assignment = {}) {
-    auto propagated = unit_propagate(cnf, assignment);
-    if (!propagated) return std::nullopt;
+    while (!stk.empty()) {
+        int var = stk.top();
+        stk.pop();
 
-    assignment = *propagated;
+        int clauseIndex = implicationVar[var];
+        if (clauseIndex == 0) continue;
 
-    bool all_satisfied = std::all_of(cnf.begin(), cnf.end(), [&](const Clause& clause) {
-        return is_clause_satisfied(clause, assignment);
-    });
-
-    if (all_satisfied) return assignment;
-
-    int var = choose_variable(cnf, assignment);
-    if (var == 0) return std::nullopt;
-
-    for (bool value : {true, false}) {
-        Assignment new_assignment = assignment;
-        new_assignment[var] = value;
-        auto result = dpll(cnf, new_assignment);
-        if (result) return result;
-    }
-
-    return std::nullopt;
-}
-
-CNF parse_dimacs(const std::string& filename) {
-    CNF cnf;
-    std::ifstream file(filename);
-    std::string line;
-
-    if (!file.is_open()) {
-        std::cerr << "Error: Cannot open file " << filename << "\n";
-        exit(1);
-    }
-
-    while (std::getline(file, line)) {
-        if (line.empty() || line[0] == 'c') continue;
-        if (line[0] == 'p') continue;
-
-        std::istringstream iss(line);
-        int lit;
-        Clause clause;
-        while (iss >> lit) {
-            if (lit == 0) break;
-            clause.push_back(lit);
+        Clause& reasonClause = clauses[clauseIndex];
+        for (int lit : reasonClause.literals) {
+            int v = abs(lit);
+            if (!seen.count(v)) {
+                seen.insert(v);
+                stk.push(v);
+                if (decisionLevel[v] == currentLevel)
+                    counter++;
+            }
         }
-        if (!clause.empty()) cnf.push_back(clause);
+        counter--;
+        if (counter <= 0) break;
     }
 
-    return cnf;
+    for (int v : seen) {
+        learned.push_back((assignment[v] == TRUE ? v : -v));
+        bumpActivity(v);
+    }
+
+    decayActivities();
+
+    backtrackLevel = 0;
+    for (int lit : learned) {
+        int var = abs(lit);
+        if (decisionLevel[var] < currentLevel) {
+            backtrackLevel = max(backtrackLevel, decisionLevel[var]);
+        }
+    }
+
+    return learned;
+}
+
+void backtrack(int level) {
+    for (int i = 1; i <= numVars; ++i) {
+        if (decisionLevel[i] > level) {
+            assignment[i] = UNASSIGNED;
+            decisionLevel[i] = 0;
+            implicationVar[i] = 0;
+        }
+    }
+    currentLevel = level;
+}
+
+bool solve() {
+    int conflictClauseIndex;
+    while (true) {
+        if (!unitPropagate(conflictClauseIndex)) {
+            if (currentLevel == 0) return false;
+
+            int backtrackLevel;
+            vector<int> learned = analyzeConflict(conflictClauseIndex, backtrackLevel);
+            Clause newClause{ learned };
+            int newClauseIndex = clauses.size();
+            clauses.push_back(newClause);
+
+            for (int l : learned) addWatch(l, newClauseIndex);
+
+            backtrack(backtrackLevel);
+            currentLevel++;
+
+            int lit = learned[0];
+            assignment[abs(lit)] = lit > 0 ? TRUE : FALSE;
+            decisionLevel[abs(lit)] = currentLevel;
+            implicationVar[abs(lit)] = newClauseIndex;
+        } else {
+            int var = pickBranchVar();
+            if (var == -1) return true;
+            currentLevel++;
+            assignment[var] = TRUE;
+            decisionLevel[var] = currentLevel;
+            implicationVar[var] = 0;
+        }
+    }
+}
+
+void printResult() {
+    if (solve()) {
+        cout << "RESULT:SAT ASSIGNMENT:";
+        for (int i = 1; i <= numVars; i++) {
+            cout << i << "=" << assignment[i];
+            if (i != numVars) cout << " ";
+        }
+        cout << "\n";
+    } else {
+        cout << "RESULT:UNSAT\n";
+    }
 }
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Usage: ./Group22Solver <input_file.cnf>\n";
+        cerr << "Usage: ./solver <input.cnf>\n";
         return 1;
     }
-
-    CNF cnf = parse_dimacs(argv[1]);
-    auto result = dpll(cnf);
-
-    if (result) {
-        std::cout << "RESULT:SAT\n";
-        std::cout << "ASSIGNMENT:";
-        std::vector<int> vars;
-        for (const auto& [var, _] : *result) vars.push_back(var);
-        std::sort(vars.begin(), vars.end());
-        for (int var : vars) {
-            std::cout << var << "=" << ((*result)[var] ? "1" : "0") << " ";
-        }
-        std::cout << "\n";
-    } else {
-        std::cout << "RESULT:UNSAT\n";
-    }
-
+    parseCNF(argv[1]);
+    printResult();
     return 0;
 }
