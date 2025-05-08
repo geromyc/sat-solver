@@ -14,6 +14,13 @@
 using namespace std;
 using namespace chrono;
 
+// Runtime toggles
+bool USE_VSIDS = true;
+bool USE_LEARNING = true;
+bool USE_NONCHRONO = true;
+bool USE_WATCHED_LITS = true;
+bool USE_ACTIVITY_DECAY = true;
+
 struct Clause {
     vector<int> literals;
 };
@@ -39,8 +46,9 @@ int pickBranchVar() {
     int bestVar = -1;
     for (int i = 1; i <= numVars; i++) {
         if (assignment[i] == UNASSIGNED) {
-            if (activity[i] > maxScore) {
-                maxScore = activity[i];
+            double score = USE_VSIDS ? activity[i] : 0;
+            if (score > maxScore) {
+                maxScore = score;
                 bestVar = i;
             }
         }
@@ -48,20 +56,28 @@ int pickBranchVar() {
     return bestVar;
 }
 
+
 void bumpActivity(int var) {
-    activity[var] += 1.0;
+    if (USE_VSIDS)
+        activity[var] += 1.0;
 }
 
 void decayActivities() {
-    for (int i = 1; i <= numVars; i++) {
-        activity[i] *= ::decay;
+    if (USE_VSIDS && USE_ACTIVITY_DECAY) {
+        for (int i = 1; i <= numVars; i++) {
+            activity[i] *= decay;
+        }
     }
 }
 
+
 bool addWatch(int lit, int clauseIndex) {
-    watches[lit + numVars].push_back(clauseIndex);
+    if (USE_WATCHED_LITS) {
+        watches[lit + numVars].push_back(clauseIndex);
+    }
     return true;
 }
+
 
 void parseCNF(const string& filename) {
     ifstream file(filename);
@@ -163,6 +179,10 @@ bool unitPropagate(int& conflictClauseIndex) {
 }
 
 vector<int> analyzeConflict(int conflictClauseIndex, int& backtrackLevel) {
+       if (!USE_LEARNING) {
+        backtrackLevel = 0;
+        return {};
+    }
     Clause& conflictClause = clauses[conflictClauseIndex];
     unordered_set<int> seen;
     vector<int> learned;
@@ -220,6 +240,9 @@ vector<int> analyzeConflict(int conflictClauseIndex, int& backtrackLevel) {
 }
 
 void backtrack(int level) {
+    if (!USE_NONCHRONO)
+        level = currentLevel - 1;
+
     for (int i = 1; i <= numVars; ++i) {
         if (decisionLevel[i] > level) {
             assignment[i] = UNASSIGNED;
@@ -274,12 +297,21 @@ void printResult() {
         cout << "RESULT:UNSAT\n";
     }
 }
-
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cerr << "Usage: ./solver <input.cnf>\n";
+    if (argc < 2) {
+        cerr << "Usage: ./solver <input.cnf> [--no-vsids] [--no-learning] [--no-ncb] [--no-watched] [--no-decay]\n";
         return 1;
     }
+
+    for (int i = 2; i < argc; i++) {
+        string arg = argv[i];
+        if (arg == "--no-vsids") USE_VSIDS = false;
+        else if (arg == "--no-learning") USE_LEARNING = false;
+        else if (arg == "--no-ncb") USE_NONCHRONO = false;
+        else if (arg == "--no-watched") USE_WATCHED_LITS = false;
+        else if (arg == "--no-decay") USE_ACTIVITY_DECAY = false;
+    }
+
     parseCNF(argv[1]);
     printResult();
     return 0;
