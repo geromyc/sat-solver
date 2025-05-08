@@ -14,9 +14,15 @@ git pull
 git checkout *branch name you are working on*
 ```
 ##### If you don't have the benchmark files unzipped
+Single
 ```text
-mkdir -p sat-solver/benchmarks/{uf20-91,uf50-218}
 cd benchmarks/
+mkdir benchmarks/fileName
+```
+Multiple
+```text
+cd benchmarks/
+mkdir -p benchmarks/{uf20-91,uf50-218}
 ```
 ```text
 tar xzf uf20-91.tar.gz -C uf20-91
