@@ -1,7 +1,9 @@
-#include "CNFParser.hpp"
-#include "DPLLSolver.hpp"
 #include <iostream>
 #include <sstream>
+
+#include "CNFParser.hpp"
+#include "DPLLSolver.hpp"
+#include "Formula.hpp"
 
 int main(int argc, char** argv) {
   if (argc != 2) {

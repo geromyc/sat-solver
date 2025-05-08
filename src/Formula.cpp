@@ -2,11 +2,13 @@
 #include <algorithm>
 
 size_t Formula::maxVar() const {
-  size_t m = 0;
-  for (const auto& c : _clauses)
-    for (Lit l : c.lits())
-      m = std::max(m, (size_t)var(l));
-  return m;
+  return _numVars ? _numVars          // header told us
+                  : std::max_element( // otherwise compute
+                        _clauses.begin(), _clauses.end(),
+                        [](const Clause& a, const Clause& b) {
+                          return a.maxVar() < b.maxVar();
+                        })
+                        ->maxVar();
 }
 
 bool Formula::allSatisfied(const Assignment& a) const {
@@ -23,10 +25,29 @@ bool Formula::hasEmptyClause(const Assignment& a) const {
   return false;
 }
 
-void Formula::initWatches(Assignment& a, bool useWatched) {
-  for (auto& c : _clauses)
-    c.watchInit(a, useWatched);
-}
+const Clause* Formula::unitPropagate(Assignment& a) {
+  bool changed;
+  do {
+    changed = false;
+    for (const auto& c : _clauses) {
+      if (c.isSatisfied(a))
+        continue;
+      if (c.hasEmpty(a))
+        return &c; // Conflict
+      if (c.isUnit(a)) {
+        Lit l = c.unitLit(a);
+        Val v = a.valueLit(l);
+        if (v == FALSE)
+          return &c; // Conflict
+        if (v == UNK) {
+          a.pushImplied(l);
+          changed = true;
+        }
+      }
+    }
+  } while (changed);
+  return nullptr; // No conflict
+};
 
 std::vector<Lit> Formula::gatherPureLiterals(const Assignment& a) const {
   std::unordered_map<int, int> mask; // var -> bitmask(positive=1, negative=2)
@@ -49,4 +70,9 @@ std::vector<Lit> Formula::gatherPureLiterals(const Assignment& a) const {
       out.push_back(-v); // only negative
   }
   return out;
+}
+
+void Formula::initWatches(Assignment& a, bool useWatched) {
+  for (auto& c : _clauses)
+    c.watchInit(a, useWatched);
 }

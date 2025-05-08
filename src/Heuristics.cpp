@@ -59,30 +59,56 @@ Lit chooseLiteral_DLIS(const Formula& F, const Assignment& A) {
 }
 
 /* ------------------------------------------------------------ *
- *  VSIDS  (two‑score arrays, exponential decay)                 *
+ *  VSIDS  (two‑score arrays, exponential decay)                *
  * ------------------------------------------------------------ */
-static std::vector<double> vsScore;
-static double decay = 0.95, bump = 1.0;
+static struct {
+  std::vector<double> pos, neg;
+  double bump  = 1.0;
+  double decay = 0.95;
 
-static void bumpVSIDS(Lit l) {
-  vsScore[var(l)] += bump;
-  bump /= decay; // grow bump over time
-}
-
-Lit chooseLiteral_VSIDS(const Formula& F, const Assignment& A, bool lastConflict) {
-  if (vsScore.empty())
-    vsScore.assign(F.varCount() + 1, 0.0);
-
-  if (lastConflict) {
-    for (int v = 1; v <= static_cast<int>(F.varCount()); ++v)
-      if (A.valueVar(v) == FALSE)
-        bumpVSIDS(Lit(v));
+  void ensure(size_t n) {
+    if (pos.size() <= n) {
+      pos.resize(n + 1, 0);
+      neg.resize(n + 1, 0);
+    }
   }
+  void bumpClause(const std::vector<Lit>& cls) {
+    for (Lit l : cls)
+      (l > 0 ? pos[l] : neg[-l]) += bump;
+    bump /= decay; // “bump” grows slowly
+  }
+  void periodicDecay() {
+    for (double& s : pos)
+      s *= decay;
+    for (double& s : neg)
+      s *= decay;
+  }
+  Lit pick(const Assignment& A) const {
+    int bestVar = 0, bestPol = 1;
+    double best = -1;
+    for (int v = 1; v < (int)pos.size(); ++v) {
+      if (A.valueVar(v) != UNK)
+        continue;
+      if (pos[v] > best) {
+        best    = pos[v];
+        bestVar = v;
+        bestPol = 1;
+      }
+      if (neg[v] > best) {
+        best    = neg[v];
+        bestVar = v;
+        bestPol = 0;
+      }
+    }
+    return bestPol ? Lit(bestVar) : negLit(bestVar);
+  }
+} VS;
 
-  int best = -1;
-  for (int v = 1; v <= static_cast<int>(F.varCount()); ++v)
-    if (A.valueVar(v) == UNK && (best == -1 || vsScore[v] > vsScore[best]))
-      best = v;
+/* called by solver whenever it *learns* a clause (CDCL) or hits a plain
+   conflict in chronological DPLL                                          */
+void vsidsBump(const std::vector<Lit>& learnt) { VS.bumpClause(learnt); }
 
-  return Lit(best); // may be 0 if something went wrong
+Lit chooseLiteral_VSIDS(const Formula& F, const Assignment& A, bool /*unused*/) {
+  VS.ensure(F.varCount());
+  return VS.pick(A);
 }

@@ -1,8 +1,9 @@
+#include "config.hpp"
 #pragma once
-#include "Assignment.hpp"
-#include "Formula.hpp"
 #include <vector>
 
+#include "Assignment.hpp"
+#include "Formula.hpp"
 class DPLLSolver {
 public:
   std::vector<Lit> _unitQ; // propagation queue (watched mode)

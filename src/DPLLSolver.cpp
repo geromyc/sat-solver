@@ -33,7 +33,6 @@ bool DPLLSolver::solve() {
  * ------------------------------------------------------------------ */
 bool DPLLSolver::dpll() {
   /* ------------------- CDCL single‑step hook -------------------- */
-#ifdef SAT_USE_CDCL
   if (_useCDCL) {
     while (true) {                      // loop until SAT / UNSAT / need decision
       if (auto done = cdclStep(_F, _A)) // returns optional<bool>
@@ -45,7 +44,6 @@ bool DPLLSolver::dpll() {
       break; // no conflict, need decision
     }
   }
-#endif
 
   /* ------------------- terminal checks -------------------------- */
   if (_F.allSatisfied(_A)) {

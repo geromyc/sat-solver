@@ -12,7 +12,6 @@ void Assignment::pushDecision(Lit l) {
   _levelPos.push_back(_trail.size());
   _trail.push_back(l);
   setLit(l);
-  _trail.push_back(0); // level marker
 }
 
 void Assignment::pushImplied(Lit l) {
@@ -22,12 +21,18 @@ void Assignment::pushImplied(Lit l) {
 
 void Assignment::backtrackTo(size_t lvl) {
   assert(lvl < _levelPos.size());
-  size_t newTrailSz = _levelPos[lvl];
+  size_t newTrailSz = _levelPos[lvl]; // first lit *of* lvl
+
+  // walk backwards, undoing assignments
   for (size_t i = _trail.size(); i > newTrailSz; --i) {
-    Lit lit = _trail[i - 1];
-    if (lit != 0)
-      _val[var(lit)] = UNK;
+    _val[var(_trail[i-1])] = UNK;
   }
   _trail.resize(newTrailSz);
   _levelPos.resize(lvl + 1);
+}
+
+Lit Assignment::lastDecisionLit() const {
+  return (_levelPos.size() <= 1)
+             ? 0
+             : _trail[_levelPos.back()]; // first literal of last level
 }

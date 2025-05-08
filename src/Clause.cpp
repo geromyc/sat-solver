@@ -2,8 +2,6 @@
 #include "Assignment.hpp"
 #include <algorithm>
 
-Clause::Clause(std::vector<Lit> lits) : _lits(std::move(lits)) {}
-
 bool Clause::isSatisfied(const Assignment& a) const {
   for (Lit l : _lits)
     if (a.valueLit(l) == TRUE)

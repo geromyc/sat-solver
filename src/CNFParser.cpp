@@ -1,75 +1,78 @@
-#include "CNFParser.hpp"
 #include <cctype>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
-/* Helper converts a token to int if it is numeric ---------------------------- */
-static bool toInt(const std::string& tok, int& out) {
-  if (tok.empty())
-    return false;
-  int sign = 1, idx = 0;
-  if (tok[0] == '-' || tok[0] == '+') {
-    sign = (tok[0] == '-') ? -1 : 1;
-    idx  = 1;
-  }
-  for (; idx < (int)tok.size(); ++idx)
-    if (!std::isdigit(tok[idx]))
-      return false;
-  out = sign * std::stoi(tok);
-  return true;
-}
+#include "CNFParser.hpp"
+#include "CoreTypes.hpp"
+#include "Formula.hpp"
 
+/** ------------------------------------------------------------------------- *
+ * Name of Author(s): Geromy Cunningham                                       *
+ *  parseDIMACS                                                               *
+ * -------------------------------------------------------------------------- *
+ * – tokenises every line with std::istringstream (=> true whitespace split)  *
+ * – header “p cnf <vars> <clauses>” is read from *that same line*            *
+ * – populates Formula with clauses and records #vars / #clauses inside F     *
+ * Input:                                                                     *
+ * @param path - Path to the DIMACS file to be parsed                         *
+ * Output:                                                                    *
+ * @return F - Formula containing the parsed clauses                          *
+ * -------------------------------------------------------------------------- */
 Formula parseDIMACS(const std::string& path) {
   std::ifstream in(path);
   if (!in)
-    throw std::runtime_error("cannot open file " + path);
+    throw std::runtime_error("cannot open file “" + path + "”");
 
   Formula F;
-  std::string tok;
-  std::vector<Lit> clause;
+  std::string line;
+  std::vector<Lit> curClause;
 
-  size_t expectedClauses = 0, parsedClauses = 0;
-
-  while (in >> tok) {
-    if (tok[0] == 'c') { /* comment – skip rest of line */
-      std::getline(in, tok);
+  while (std::getline(in, line)) {
+    if (line.empty() || line[0] == 'c') // comment / blank
       continue;
-    }
-    if (tok[0] == 'p') { /* problem line */
+
+    std::istringstream ls(line);
+    std::string tok;
+    ls >> tok;
+
+    // --- Header line “p cnf <vars> <clauses>” ---
+    if (tok == "p") {
       std::string fmt;
-      size_t vars;
-      in >> fmt >> vars >> expectedClauses;
+      size_t vars = 0, clauses = 0;
+      ls >> fmt >> vars >> clauses;
+      if (fmt != "cnf")
+        throw std::runtime_error("expected “p cnf …”, got “p " + fmt + " …”");
+      F.setVarCount(vars);
+      F.reserveClauses(clauses);
       continue;
     }
-    if (tok[0] == '%') /* optional EOF marker */
+
+    // --- EOF marker "%" or "0" in the line ---
+    if (tok == "%")
       break;
 
-    int lit;
-    if (!toInt(tok, lit)) /* ignore stray words */
-      continue;
-
-    if (lit == 0) { /* clause finished */
-      if (!clause.empty()) {
-        F.addClause(Clause(std::move(clause)));
-        clause.clear();
-        ++parsedClauses;
+    // --- Clause Handling ---
+    int lit = std::stoi(tok); // first literal already read
+    for (;;) {
+      if (lit == 0) { // end–of–clause sentinel
+        if (!curClause.empty()) {
+          F.addClause(Clause(std::move(curClause)));
+          curClause.clear();
+        }
+        break;
       }
-    }
-    else {
-      clause.push_back(lit);
+      curClause.push_back(lit);
+      if (!(ls >> lit)) // no more tokens on this line
+        break;
     }
   }
 
-  if (!clause.empty()) { /* last clause if file omits '%' */
-    F.addClause(Clause(std::move(clause)));
-    ++parsedClauses;
-  }
-
-  if (expectedClauses && expectedClauses != parsedClauses)
-    std::cerr << "warning: header said " << expectedClauses << " clauses, parsed "
-              << parsedClauses << "\n";
+  /* file may omit the final “0” — flush anything buffered                   */
+  if (!curClause.empty())
+    F.addClause(Clause(std::move(curClause)));
 
   return F;
 }
