@@ -62,7 +62,26 @@ SAT_USE_VSIDS=1 ./mySAT example.cnf
 SAT_USE_WATCHED=1 SAT_USE_VSIDS=1 SAT_USE_CDCL=1 ./mySAT example.cnf
 
 # Developer Notes
-#### Function Comment Format (javadoc)
+### Logger
+Each run gets its own logfile — filename includes date + time down
+to seconds, so consecutive bulk runs never overwrite each other.
+
+2. You can route different solver modes (base / watched / CDCL / VSIDS) to
+separate log files just by exporting SAT_LOG_TAG=<tag> before you run.
+tag becomes part of the filename.
+
+##### base DPLL
+SAT_LOG_TAG=base  ./bulktest.sh benchmarks/all_cnf/uf20-91
+
+##### watched literals only
+SAT_USE_WATCHED=1 SAT_LOG_TAG=watched ./bulktest.sh …
+
+##### watched + CDCL + VSIDS
+SAT_USE_WATCHED=1 SAT_USE_CDCL=1 SAT_USE_VSIDS=1 \
+SAT_LOG_TAG=cdcl_vsids ./bulktest.sh …
+
+
+### Function Comment Format (javadoc)
 ```text
 /**
 * Name of Author(s):

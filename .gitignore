@@ -37,3 +37,4 @@ mySAT
 
 # Libraries
 benchmarks/all_cnf/**
+documents/logs/*
