@@ -14,14 +14,14 @@ std::optional<bool> cdclStep(Formula& F, Assignment& A) {
       return false; // UNSAT at root level
 
     // learn negation of last decision as a unit clause
-    Lit decLit = A.lastDecisionLit();
-    Clause learnt({neg(decLit)});
-    F.addClause(std::move(learnt));
-    vsidsBump(learnt.lits());
+    Lit p = neg(A.trail().back()); // literal that just falsified clause
+    Clause learnt({p});
+    F.addClause(Clause({p}));
+    vsidsBump({p});
 
     // non-chronological backjump to level-0 and assert learnt unit
     A.backjump(0);
-    A.assign(neg(decLit), /*dl=*/0, /*antecedent*/ nullptr);
+    A.assign(p, /*dl=*/0, /*antecedent*/ nullptr);
   }
 
   // if all vars assigned, SAT; else continue with decision

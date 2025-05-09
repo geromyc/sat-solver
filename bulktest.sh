@@ -9,7 +9,7 @@
 # NOTE: DLIS > VSIDS if both are enabled
 # comment out for base DPLL
 # export SAT_USE_WATCHED=1
-export SAT_USE_CDCL=1
+# export SAT_USE_CDCL=1
 # export SAT_USE_DLIS=1
 # export SAT_USE_VSIDS=1
 

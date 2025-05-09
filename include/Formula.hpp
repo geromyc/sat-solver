@@ -38,8 +38,12 @@ public:
 
   /* --- Watched Literals --- */
   void initWatches(Assignment&, bool useWatched);
+  const std::vector<Clause*>& clausesWatching(Lit L) const {
+    return _watchList[L + varCount()];
+  }
 
 private:
-  size_t _numVars = 0;          // total #variables in instance
-  std::vector<Clause> _clauses; // owned clauses
+  size_t _numVars = 0;                          // total #variables in instance
+  std::vector<Clause> _clauses;                 // owned clauses
+  std::vector<std::vector<Clause*>> _watchList; // per literal
 };

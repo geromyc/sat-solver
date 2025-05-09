@@ -28,14 +28,13 @@ void Assignment::fillUnassignedFalse() {
 
 void Assignment::backtrackTo(size_t lvl) {
   assert(lvl < _levelPos.size());
-  size_t newTrailSz = _levelPos[lvl]; // first lit *of* lvl
+  size_t newTrailSz = _levelPos[lvl];
 
-  // walk backwards, undoing assignments
-  for (size_t i = _trail.size(); i > newTrailSz; --i) {
+  for (size_t i = _trail.size(); i > newTrailSz; --i)
     _val[var(_trail[i - 1])] = UNK;
-  }
+
   _trail.resize(newTrailSz);
-  _levelPos.resize(lvl + 1);
+  _levelPos.resize(lvl + 1); // <- KEEP one entry for lvl
 }
 
 Lit Assignment::lastDecisionLit() const {

@@ -34,6 +34,7 @@ bool DPLLSolver::solve() {
  *  Recursive Core                                                    *
  * ------------------------------------------------------------------ */
 bool DPLLSolver::dpll() {
+  pureLiteralElimination();
   /* ------------------- CDCL single‑step hook -------------------- */
   if (_useCDCL) {
     while (true) {                      // loop until SAT / UNSAT / need decision
@@ -95,29 +96,34 @@ void DPLLSolver::pureLiteralElimination() {
  * ------------------------------------------------------------------ */
 bool DPLLSolver::unitPropagate() {
   _lastConflict = false;
+  _unitQ.clear();
 
-  if (_useWatched) { /* --- fast watched‑literal loop --- */
+  if (_useWatched) { // --- fast watched‑literal loop ---
     for (auto& c : _F.clauses())
       if (c.isUnit(_A))
         _unitQ.push_back(c.unitLit(_A));
 
     while (!_unitQ.empty()) {
-      Lit l = _unitQ.back();
+      Lit lit = _unitQ.back();
       _unitQ.pop_back();
-      Val v = _A.valueLit(l);
+      Val v = _A.valueLit(lit);
       if (v == TRUE)
         continue;
-      else if (v == FALSE) {
+      if (v == FALSE) {
         _lastConflict = true;
         return false;
       }
 
-      _A.pushImplied(l);
-      for (auto& c : _F.clauses())
-        if (!c.onLiteralFalse(neg(l), _A, _unitQ, true)) {
+      _A.pushImplied(lit);
+
+      /* process only the clauses that *watch* ¬lit */
+      const auto& WL = _F.clausesWatching(neg(lit));
+      for (Clause* cp : WL) {
+        if (!cp->onLiteralFalse(neg(lit), _A, _unitQ, true)) {
           _lastConflict = true;
           return false;
         }
+      }
     }
     return true;
   }

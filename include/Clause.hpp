@@ -8,6 +8,8 @@ class Assignment; /* forward */
 
 class Clause {
 public:
+  int firstWatch() const { return _wa; }
+  int secondWatch() const { return _wb; }
   explicit Clause(std::vector<Lit> lits)
       : _lits(std::move(lits)), _litCount(_lits.size()) {}
 

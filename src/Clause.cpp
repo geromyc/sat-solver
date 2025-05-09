@@ -79,7 +79,8 @@ bool Clause::onLiteralFalse(Lit falsed,
     return false; // conflict
   }
   if (ov == UNK) {
-    unitQ.push_back(other); // enqueue
+    if (std::find(unitQ.begin(), unitQ.end(), other) == unitQ.end())
+      unitQ.push_back(other);
   }
   return true;
 }
