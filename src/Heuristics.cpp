@@ -3,6 +3,7 @@
 
 #include "CoreTypes.hpp"
 #include "Heuristics.hpp"
+#include "Logger.hpp"
 
 /* ------------------------------------------------------------ *
  *  global flags (set once at start‑up)                          *
@@ -19,7 +20,6 @@ void initHeuristicFlags() {
  *  Plain DPLL fallback : first unassigned literal               *
  * ------------------------------------------------------------ */
 Lit chooseLiteral_DPLL(const Formula& F, const Assignment& A) {
-  Lit firstUnk = 0;
   for (const Clause& c : F.clauses()) {
     if (c.isSatisfied(A))
       continue;
@@ -74,27 +74,34 @@ Lit chooseLiteral_DLIS(const Formula& F, const Assignment& A) {
  * ------------------------------------------------------------ */
 static struct {
   std::vector<double> pos, neg;
-  double bump  = 1.0;
-  double decay = 0.95;
+  double bump  = 1.0;  // current bump‑magnitude (grows 1/decay each conflict)
+  double decay = 0.95; // global decay factor
+  int cnt      = 0;    // how many times bumpClause() was called
 
-  void ensure(size_t n) {
+  void ensure(size_t n) { // enlarge on demand
     if (pos.size() <= n) {
       pos.resize(n + 1, 0);
       neg.resize(n + 1, 0);
     }
   }
+
+  /* bump all literals in the learnt/conflict clause */
   void bumpClause(const std::vector<Lit>& cls) {
     for (Lit l : cls)
       (l > 0 ? pos[l] : neg[-l]) += bump;
-    bump /= decay; // “bump” grows slowly
+
+    bump /= decay; // next bump will be a bit larger   (MiniSAT style)
+
+    /* decay all variable scores every 100 bumps */
+    if (++cnt % 100 == 0) {
+      for (double& s : pos)
+        s *= decay;
+      for (double& s : neg)
+        s *= decay;
+    }
   }
-  void periodicDecay() {
-    for (double& s : pos)
-      s *= decay;
-    for (double& s : neg)
-      s *= decay;
-  }
-  Lit pick(const Assignment& A) const {
+
+  Lit pick(const Assignment& A) const { // choose best unassigned literal
     int bestVar = 0, bestPol = 1;
     double best = -1;
     for (int v = 1; v < (int)pos.size(); ++v) {

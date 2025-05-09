@@ -1,5 +1,6 @@
 #include "Clause.hpp"
 #include "Assignment.hpp"
+#include "Logger.hpp"
 #include <algorithm>
 
 bool Clause::isSatisfied(const Assignment& a) const {
@@ -65,6 +66,8 @@ bool Clause::onLiteralFalse(Lit falsed,
 
   /* try to find replacement literal */
   for (size_t k = 0; k < _lits.size(); ++k) {
+    if (_wa == -1 || _wb == -1)
+      return true;
     if (k == static_cast<size_t>(_wa) || k == static_cast<size_t>(_wb))
       continue;
     if (asgn.valueLit(_lits[k]) != FALSE) {

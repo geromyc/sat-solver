@@ -4,6 +4,7 @@
 #include "CNFParser.hpp"
 #include "DPLLSolver.hpp"
 #include "Formula.hpp"
+#include "Logger.hpp"
 
 int main(int argc, char** argv) {
   if (argc != 2) {
@@ -14,12 +15,10 @@ int main(int argc, char** argv) {
     Formula F = parseDIMACS(argv[1]);
     DPLLSolver solver(std::move(F));
     const bool sat = solver.solve();
-
     if (!sat) {
       std::cout << "RESULT:UNSAT\n";
       return 0;
     }
-
     std::cout << "RESULT:SAT\nASSIGNMENT:";
     const auto& M = solver.model().raw(); // 1‑based, M[0] is dummy
     for (size_t v = 1; v < M.size(); ++v)

@@ -8,6 +8,7 @@
 #include "CNFParser.hpp"
 #include "CoreTypes.hpp"
 #include "Formula.hpp"
+#include "Logger.hpp"
 
 /** ------------------------------------------------------------------------- *
  * Name of Author(s): Geromy Cunningham                                       *

@@ -2,6 +2,7 @@
 
 #include "DPLLSolver.hpp"
 #include "Heuristics.hpp"
+#include "Logger.hpp"
 #ifdef SAT_USE_CDCL
 #include "CDCL.hpp"
 #endif
@@ -40,7 +41,9 @@ bool DPLLSolver::dpll() {
       if (auto done = cdclStep(_F, _A)) // returns optional<bool>
         return *done;                   // finished
       if (!unitPropagate()) {           // propagate learned unit(s)
-        _lastConflict = true;
+        if (_lastConflict)
+          Logger::instance().log("VSIDS bump after conflict at DL=" +
+                                 std::to_string(_A.currLevel()));
         continue; // another CDCL round
       }
       break; // no conflict, need decision

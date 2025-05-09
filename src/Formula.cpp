@@ -1,4 +1,5 @@
 #include "Formula.hpp"
+#include "Logger.hpp"
 #include <algorithm>
 
 size_t Formula::maxVar() const {

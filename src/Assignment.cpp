@@ -1,4 +1,5 @@
 #include "Assignment.hpp"
+#include "Logger.hpp"
 
 Val Assignment::valueLit(Lit l) const {
   Val v = _val[std::abs(l)];
@@ -27,13 +28,19 @@ void Assignment::fillUnassignedFalse() {
 }
 
 void Assignment::backtrackTo(size_t lvl) {
-  assert(lvl < _levelPos.size());
+  if (lvl >= _levelPos.size()) {
+    Logger::instance().warn("backtrackTo(" + std::to_string(lvl) +
+                            ")  ‑‑ clipping to deepest level " +
+                            std::to_string(currLevel()));
+    lvl = _levelPos.empty() ? 0 : _levelPos.size() - 1; // clamp
+  }
+
   size_t newTrailSz = _levelPos[lvl]; // first lit *of* lvl
 
-  // walk backwards, undoing assignments
-  for (size_t i = _trail.size(); i > newTrailSz; --i) {
+  /* undo assignments */
+  for (size_t i = _trail.size(); i > newTrailSz; --i)
     _val[var(_trail[i - 1])] = UNK;
-  }
+
   _trail.resize(newTrailSz);
   _levelPos.resize(lvl + 1);
 }
