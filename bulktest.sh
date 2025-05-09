@@ -8,11 +8,11 @@
 
 # NOTE: DLIS > VSIDS if both are enabled
 # comment out for base DPLL
-# export SAT_USE_WATCHED=1
-# export SAT_USE_CDCL=1
-# export SAT_USE_DLIS=1
-# export SAT_USE_VSIDS=1
-
+# export USE_VSIDS=1
+# export USE_LEARNING=1
+# export USE_WATCHED_LITS = 1;
+# export USE_NONCHRONO=1
+# export USE_ACTIVITY_DECAY=1
 
 dirs=("$@")
 [[ ${#dirs[@]} -eq 0 ]] && dirs=(benchmarks)
