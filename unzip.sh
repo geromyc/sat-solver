@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEST="$HOME/benchmarks/all_cnf"        # final collection folder
+DEST="./benchmarks/all_cnf"        # final collection folder
 mkdir -p "$DEST"
 
 # find every *.tar or *.tar.gz archived under ~/benchmarks
