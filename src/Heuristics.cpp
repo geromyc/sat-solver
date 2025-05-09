@@ -94,6 +94,8 @@ static struct {
 
     /* decay all variable scores every 100 bumps */
     if (++cnt % 100 == 0) {
+      Logger::instance().log("Heuristics::vsidsBump: Applied decay after " +
+                             std::to_string(cnt) + " bumps");
       for (double& s : pos)
         s *= decay;
       for (double& s : neg)

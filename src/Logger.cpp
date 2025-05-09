@@ -1,14 +1,15 @@
+// ----------  src/Logger.cpp  (replace entire file)  ----------------
 #include "Logger.hpp"
 #include <chrono>
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
 
-using clock = std::chrono::system_clock;
+using sys_clock = std::chrono::system_clock;
 
 static std::string today() {
-  auto now   = clock::now();
-  auto t     = clock::to_time_t(now);
+  auto now   = sys_clock::now();
+  auto t     = sys_clock::to_time_t(now);
   std::tm tm = *std::localtime(&t);
   std::ostringstream os;
   os << std::put_time(&tm, "%Y-%m-%d");
@@ -28,12 +29,13 @@ Logger::Logger() {
 
 void Logger::log(const std::string& m) {
   std::lock_guard<std::mutex> lk(_mtx);
-  auto now = clock::now();
+
+  auto now = sys_clock::now(); // << renamed
   auto ms =
       std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) %
       1000;
 
-  std::time_t tt = clock::to_time_t(now);
+  std::time_t tt = sys_clock::to_time_t(now); // << renamed
   std::tm tm     = *std::localtime(&tt);
 
   _out << std::put_time(&tm, "%H:%M:%S") << '.' << std::setw(3) << std::setfill('0')

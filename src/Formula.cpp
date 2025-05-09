@@ -33,13 +33,21 @@ const Clause* Formula::unitPropagate(Assignment& a) {
     for (const auto& c : _clauses) {
       if (c.isSatisfied(a))
         continue;
-      if (c.hasEmpty(a))
+      if (c.hasEmpty(a)) {
+        Logger::instance().log(
+            "Formula::unitPropagate: Conflict detected at clause pointer " +
+            std::to_string(reinterpret_cast<uintptr_t>(&c)));
         return &c; // Conflict
+      }
       if (c.isUnit(a)) {
         Lit l = c.unitLit(a);
         Val v = a.valueLit(l);
-        if (v == FALSE)
+        if (v == FALSE) {
+          Logger::instance().log(
+              "Formula::unitPropagate: Conflict detected at clause pointer " +
+              std::to_string(reinterpret_cast<uintptr_t>(&c)));
           return &c; // Conflict
+        }
         if (v == UNK) {
           a.pushImplied(l);
           changed = true;

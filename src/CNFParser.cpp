@@ -48,6 +48,9 @@ Formula parseDIMACS(const std::string& path) {
         throw std::runtime_error("expected “p cnf …”, got “p " + fmt + " …”");
       F.setVarCount(vars);
       F.reserveClauses(clauses);
+      Logger::instance().log(
+          "CNFParser::parseDIMACS: Header read, vars = " + std::to_string(vars) +
+          ", clauses = " + std::to_string(clauses));
       continue;
     }
 

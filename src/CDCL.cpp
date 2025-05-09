@@ -18,7 +18,8 @@ std::optional<bool> cdclStep(Formula& F, Assignment& A) {
     Lit decLit = A.lastDecisionLit();
     Clause learnt({neg(decLit)});
     F.addClause(std::move(learnt));
-    Logger::instance().log("CDCL learnt 1‑clause  – backjump to 0");
+    Logger::instance().log("CDCL::cdclStep: Learnt clause with literal " +
+                           std::to_string(neg(decLit)) + ", backjumping to level 0");
 
     vsidsBump(learnt.lits());
 

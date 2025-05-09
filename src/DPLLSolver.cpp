@@ -35,6 +35,8 @@ bool DPLLSolver::solve() {
  *  Recursive Core                                                    *
  * ------------------------------------------------------------------ */
 bool DPLLSolver::dpll() {
+  Logger::instance().log("DPLLSolver::dpll entry: recursion depth = " +
+                         std::to_string(_A.currLevel()));
   /* ------------------- CDCL single‑step hook -------------------- */
   if (_useCDCL) {
     while (true) {                      // loop until SAT / UNSAT / need decision
@@ -68,9 +70,12 @@ bool DPLLSolver::dpll() {
 
   _A.backtrackTo(lvl);
   _A.pushDecision(neg(decision));
-  if (unitPropagate() && dpll())
+  if (unitPropagate() && dpll()) {
+    Logger::instance().log("DPLLSolver::dpll: Backtracking to level " +
+                           std::to_string(lvl) + " after decision " +
+                           std::to_string(decision));
     return true;
-
+  }
   _A.backtrackTo(lvl);
   return false;
 }
@@ -85,6 +90,9 @@ void DPLLSolver::pureLiteralElimination() {
     auto pure = _F.gatherPureLiterals(_A);
     for (Lit l : pure) {
       if (_A.valueLit(l) == UNK) {
+        Logger::instance().log(
+            "DPLLSolver::pureLiteralElimination: Forcing pure literal " +
+            std::to_string(l));
         _A.pushImplied(l);
         changed = true;
       }
@@ -112,6 +120,8 @@ bool DPLLSolver::unitPropagate() {
         continue;
       else if (v == FALSE) {
         _lastConflict = true;
+        Logger::instance().log(
+            "DPLLSolver::unitPropagate: Conflict detected, _lastConflict set to TRUE");
         return false;
       }
 
@@ -119,6 +129,8 @@ bool DPLLSolver::unitPropagate() {
       for (auto& c : _F.clauses())
         if (!c.onLiteralFalse(neg(l), _A, _unitQ, true)) {
           _lastConflict = true;
+          Logger::instance().log("DPLLSolver::unitPropagate: Conflict detected while "
+                                 "processing clause, _lastConflict set to TRUE");
           return false;
         }
     }
@@ -133,6 +145,8 @@ bool DPLLSolver::unitPropagate() {
         continue;
       if (c.hasEmpty(_A)) {
         _lastConflict = true;
+        Logger::instance().log("DPLLSolver::unitPropagate: Conflict detected in fallback "
+                               "loop, _lastConflict set to TRUE");
         return false;
       }
       if (c.isUnit(_A)) {
@@ -140,6 +154,8 @@ bool DPLLSolver::unitPropagate() {
         Val v = _A.valueLit(l);
         if (v == FALSE) {
           _lastConflict = true;
+          Logger::instance().log("DPLLSolver::unitPropagate: Conflict detected on unit "
+                                 "literal in fallback, _lastConflict set to TRUE");
           return false;
         }
         if (v == UNK) {
@@ -154,11 +170,14 @@ bool DPLLSolver::unitPropagate() {
 }
 
 Lit DPLLSolver::chooseBranchLiteral() const {
+  Lit chosen = 0;
   if (_useDLIS)
-    return chooseLiteral_DLIS(_F, _A);
-
-  if (_useVSIDS)
-    return chooseLiteral_VSIDS(_F, _A, _lastConflict);
-
-  return chooseLiteral_DPLL(_F, _A);
+    chosen = chooseLiteral_DLIS(_F, _A);
+  else if (_useVSIDS)
+    chosen = chooseLiteral_VSIDS(_F, _A, _lastConflict);
+  else
+    chosen = chooseLiteral_DPLL(_F, _A);
+  Logger::instance().log("DPLLSolver::chooseBranchLiteral: Chosen literal " +
+                         std::to_string(chosen));
+  return chosen;
 }
