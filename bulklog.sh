@@ -16,6 +16,7 @@ export SAT_USE_VSIDS=1
 
 find "$ROOT" -mindepth 1 -maxdepth 1 -type d | sort |
 while read -r folder; do
+    SECONDS=0
     echo "$folder"
     echo "starting solver..."
 
@@ -40,6 +41,6 @@ while read -r folder; do
         fi
         ((count++))
     done
-
-    echo "Processed $count files  |  SAT=$sat  UNSAT=$unsat  OTHER=$err"
+    elapsed=$SECONDS
+    echo "Processed $count files  |  SAT=$sat  UNSAT=$unsat  OTHER=$err |  time=$elapsed"
 done
