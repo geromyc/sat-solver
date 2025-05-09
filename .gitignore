@@ -36,7 +36,4 @@ documents/minisat/
 mySAT
 
 # Libraries
-benchmarks/uf20-91/*
-benchmarks/uf50-218/*
-benchmarks/uf75-325/*
-benchmarks/AIM/*
+benchmarks/all_cnf/*
