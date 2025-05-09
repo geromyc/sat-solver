@@ -35,8 +35,8 @@ bool DPLLSolver::solve() {
  *  Recursive Core                                                    *
  * ------------------------------------------------------------------ */
 bool DPLLSolver::dpll() {
-  Logger::instance().log("DPLLSolver::dpll entry: recursion depth = " +
-                         std::to_string(_A.currLevel()));
+  // Logger::instance().log("DPLLSolver::dpll entry: recursion depth = " +
+  //                        std::to_string(_A.currLevel()));
   /* ------------------- CDCL single‑step hook -------------------- */
   if (_useCDCL) {
     while (true) {                      // loop until SAT / UNSAT / need decision
@@ -120,17 +120,17 @@ bool DPLLSolver::unitPropagate() {
         continue;
       else if (v == FALSE) {
         _lastConflict = true;
-        Logger::instance().log(
-            "DPLLSolver::unitPropagate: Conflict detected, _lastConflict set to TRUE");
+        // Logger::instance().log(
+        //     "DPLLSolver::unitPropagate: Conflict detected, _lastConflict set to TRUE");
         return false;
       }
 
       _A.pushImplied(l);
       for (auto& c : _F.clauses())
-        if (!c.onLiteralFalse(neg(l), _A, _unitQ, true)) {
+        if (!c.onLiteralFalse(neg(l), _A, _unitQ, SAT_USE_WATCHED)) {
           _lastConflict = true;
-          Logger::instance().log("DPLLSolver::unitPropagate: Conflict detected while "
-                                 "processing clause, _lastConflict set to TRUE");
+          // Logger::instance().log("DPLLSolver::unitPropagate: Conflict detected while "
+          //                        "processing clause, _lastConflict set to TRUE");
           return false;
         }
     }
@@ -177,7 +177,7 @@ Lit DPLLSolver::chooseBranchLiteral() const {
     chosen = chooseLiteral_VSIDS(_F, _A, _lastConflict);
   else
     chosen = chooseLiteral_DPLL(_F, _A);
-  Logger::instance().log("DPLLSolver::chooseBranchLiteral: Chosen literal " +
-                         std::to_string(chosen));
+  // Logger::instance().log("DPLLSolver::chooseBranchLiteral: Chosen literal " +
+  //                        std::to_string(chosen));
   return chosen;
 }

@@ -80,12 +80,12 @@ bool Clause::onLiteralFalse(Lit falsed,
   Val ov    = asgn.valueLit(other);
   if (ov == FALSE) {
     return false; // conflict
-    Logger::instance().log("Clause::onLiteralFalse: Conflict detected on literal " +
-                           std::to_string(other));
+    // Logger::instance().log("Clause::onLiteralFalse: Conflict detected on literal " +
+    //                        std::to_string(other));
   }
   if (ov == UNK) {
-    Logger::instance().log("Clause::onLiteralFalse: Clause became unit with literal " +
-                           std::to_string(other));
+    // Logger::instance().log("Clause::onLiteralFalse: Clause became unit with literal " +
+    //                        std::to_string(other));
     unitQ.push_back(other); // enqueue
   }
   return true;

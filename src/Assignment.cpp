@@ -13,13 +13,13 @@ void Assignment::pushDecision(Lit l) {
   _levelPos.push_back(_trail.size());
   _trail.push_back(l);
   setLit(l);
-  Logger::instance().log("pushDecision(" + std::to_string(l) + ")");
+  //Logger::instance().log("pushDecision(" + std::to_string(l) + ")");
 }
 
 void Assignment::pushImplied(Lit l) {
   _trail.push_back(l);
   setLit(l);
-  Logger::instance().log("pushImplied(" + std::to_string(l) + ")");
+  //Logger::instance().log("pushImplied(" + std::to_string(l) + ")");
 }
 
 /* Assignment.hpp / .cpp  ------------------------------------------- */

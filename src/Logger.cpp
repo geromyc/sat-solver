@@ -14,7 +14,7 @@ static std::string now_ymd_hms() {
   std::tm tm = *std::localtime(&tt);
 
   std::ostringstream os;
-  os << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S");
+  os << std::put_time(&tm, "%Y-%m-%d_%H-%M");
   return os.str();
 }
 
