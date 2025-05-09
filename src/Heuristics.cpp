@@ -19,7 +19,6 @@ void initHeuristicFlags() {
  *  Plain DPLL fallback : first unassigned literal               *
  * ------------------------------------------------------------ */
 Lit chooseLiteral_DPLL(const Formula& F, const Assignment& A) {
-  Lit firstUnk = 0;
   for (const Clause& c : F.clauses()) {
     if (c.isSatisfied(A))
       continue;
