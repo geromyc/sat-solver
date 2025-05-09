@@ -40,8 +40,7 @@ bool DPLLSolver::dpll() {
       if (auto done = cdclStep(_F, _A)) // returns optional<bool>
         return *done;                   // finished
       if (!unitPropagate()) {           // propagate learned unit(s)
-        _lastConflict = true;
-        continue; // another CDCL round
+        continue;                       // another CDCL round
       }
       break; // no conflict, need decision
     }

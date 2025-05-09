@@ -39,9 +39,7 @@ print_result() {
 }
 
 for dir in "${dirs[@]}"; do
-  echo "debug: files found under $dir:"
   mapfile -t cnf_files < <(find "$dir" -type f -name '*.cnf' | sort)
-  printf '%s\n' "${cnf_files[@]:0:10}"  # print first 10
   echo "starting solver..."
 
   for cnf in "${cnf_files[@]}"; do

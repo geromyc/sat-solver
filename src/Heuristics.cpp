@@ -76,17 +76,26 @@ static struct {
   std::vector<double> pos, neg;
   double bump  = 1.0;
   double decay = 0.95;
+  int cnt      = 0;
 
-  void ensure(size_t n) {
+  void ensure(size_t n) { // enlarge on demand
     if (pos.size() <= n) {
       pos.resize(n + 1, 0);
       neg.resize(n + 1, 0);
     }
   }
+  /* bump all literals in the learnt/conflict clause */
   void bumpClause(const std::vector<Lit>& cls) {
     for (Lit l : cls)
       (l > 0 ? pos[l] : neg[-l]) += bump;
     bump /= decay; // “bump” grows slowly
+    /* decay all variable scores every 100 bumps */
+    if (++cnt % 100 == 0) {
+      for (double& s : pos)
+        s *= decay;
+      for (double& s : neg)
+        s *= decay;
+    }
   }
   void periodicDecay() {
     for (double& s : pos)
@@ -94,7 +103,7 @@ static struct {
     for (double& s : neg)
       s *= decay;
   }
-  Lit pick(const Assignment& A) const {
+  Lit pick(const Assignment& A) const { // choose best unassigned literal
     int bestVar = 0, bestPol = 1;
     double best = -1;
     for (int v = 1; v < (int)pos.size(); ++v) {

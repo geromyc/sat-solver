@@ -9,7 +9,7 @@
 // VERY reduced CDCL skeleton: learns unit clause on first conflict
 std::optional<bool> cdclStep(Formula& F, Assignment& A) {
   // conflict!   confl -> ptr to conflicting clause
-  while (auto confl = F.unitPropagate(A)) {
+  while (F.unitPropagate(A)) {
     if (A.decisionLevel() == 0)
       return false; // UNSAT at root level
 
@@ -21,7 +21,7 @@ std::optional<bool> cdclStep(Formula& F, Assignment& A) {
 
     // non-chronological backjump to level-0 and assert learnt unit
     A.backjump(0);
-    A.assign(neg(decLit), /*dl=*/0, /*antecedent*/ nullptr);
+    A.assign(neg(decLit), 0, nullptr);
   }
 
   // if all vars assigned, SAT; else continue with decision
