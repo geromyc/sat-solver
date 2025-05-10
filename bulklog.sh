@@ -8,21 +8,20 @@ set -uo pipefail            # keep -u and pipefail, but drop -e
 ROOT="benchmarks/all_cnf"
 
 # ---- solver feature flags -----------------------------------
-export SAT_USE_WATCHED=1
-export SAT_USE_CDCL=1
-export SAT_USE_VSIDS=1
+#export SAT_USE_WATCHED=1
+#export SAT_USE_CDCL=1
+#export SAT_USE_VSIDS=1
 # export SAT_USE_DLIS=1
 # -------------------------------------------------------------
+echo "starting solver..."
 
 find "$ROOT" -mindepth 1 -maxdepth 1 -type d | sort |
+
 while read -r folder; do
     SECONDS=0
     echo "$folder"
-    echo "starting solver..."
-
     logFile="$folder/$(basename "$folder").log"
     : > "$logFile"                       # truncate previous run
-
     count=0 sat=0 unsat=0 err=0
 
     find "$folder" -type f -name '*.cnf' | sort |

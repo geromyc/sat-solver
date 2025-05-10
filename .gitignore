@@ -33,8 +33,8 @@
 
 # Ignore folders
 documents/minisat/
-mySAT
 
 # Libraries
 benchmarks/all_cnf/**
+benchmarks/unused/
 documents/logs/**

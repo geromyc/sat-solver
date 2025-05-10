@@ -113,7 +113,7 @@ bool DPLLSolver::unitPropagate() {
 
       _A.pushImplied(l);
       for (auto& c : _F.clauses())
-        if (!c.onLiteralFalse(neg(l), _A, _unitQ, true)) {
+        if (!c.onLiteralFalse(neg(l), _A, _unitQ, _useWatched)) {
           _lastConflict = true;
           return false;
         }

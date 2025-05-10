@@ -1,0 +1,30 @@
+The counters weren't working, when looking at the other output files for each individual tests there are 3 things that happen:
+SAT, UNSAT, Error (Memory)
+
+starting solver...
+benchmarks/all_cnf/aim
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=99
+benchmarks/all_cnf/dubois
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=123
+benchmarks/all_cnf/jnh
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=69
+benchmarks/all_cnf/parity
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=14
+benchmarks/all_cnf/pigeon-hole
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=18
+benchmarks/all_cnf/pret
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=18
+benchmarks/all_cnf/uf100-430
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=192
+benchmarks/all_cnf/uf20-91
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=8
+benchmarks/all_cnf/uf50-218
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=34
+benchmarks/all_cnf/uf75-325
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=15
+benchmarks/all_cnf/uuf100-430
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=105
+benchmarks/all_cnf/uuf50-218
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=26
+benchmarks/all_cnf/uuf75-325
+Processed 0 files  |  SAT=0  UNSAT=0  OTHER=0 |  time=0

@@ -9,20 +9,15 @@ ECE51216 Group Project - Satisfiability solver with heuristic implementation of 
 # How-To-Run
 ##### Update your local files (from remote/GitHub)
 ```text
-git checkout main
-git pull
+git pull origin
 git checkout *branch name you are working on*
 ```
 ##### If you don't have the benchmark files unzipped
 ```text
-mkdir -p sat-solver/benchmarks/{uf20-91,uf50-218}
-cd benchmarks/
-```
-```text
-tar xzf uf20-91.tar.gz -C uf20-91
-```
-```text
-tar xzf uf50-218.tar.gz -C uf50-218
+chmod +x unzip.sh
+chmod +x bulklog.sh
+chmod +x bulktest.sh
+./unzip.sh
 ```
 
 ## Build
@@ -49,14 +44,11 @@ time ./bulktest.sh benchmarks/foldername
 # Heuristics (export before run)
 0 = default/off   ;   1 = on
 
-##### enable watched literals only
-SAT_USE_WATCHED=1 ./mySAT example.cnf
-
-##### baseline + DLIS decision heuristic
-SAT_USE_DLIS=1 ./mySAT example.cnf
-
 ##### baseline + VSIDS
 SAT_USE_VSIDS=1 ./mySAT example.cnf
+
+##### enable watched literals only
+SAT_USE_WATCHED=1 ./mySAT example.cnf
 
 ##### watched literals + VSIDS + CDCL
 SAT_USE_WATCHED=1 SAT_USE_VSIDS=1 SAT_USE_CDCL=1 ./mySAT example.cnf
