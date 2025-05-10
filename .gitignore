@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Ignore folders
+documents/minisat/
+
+# Libraries
+benchmarks/all_cnf/**
+benchmarks/unused/
+documents/logs/**

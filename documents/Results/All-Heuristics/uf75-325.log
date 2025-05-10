@@ -1,0 +1,304 @@
+===== uf75-01.cnf =====
+
+
+===== uf75-010.cnf =====
+RESULT:UNSAT
+
+===== uf75-0100.cnf =====
+RESULT:UNSAT
+
+===== uf75-011.cnf =====
+RESULT:UNSAT
+
+===== uf75-012.cnf =====
+RESULT:UNSAT
+
+===== uf75-013.cnf =====
+RESULT:UNSAT
+
+===== uf75-014.cnf =====
+RESULT:UNSAT
+
+===== uf75-015.cnf =====
+RESULT:UNSAT
+
+===== uf75-016.cnf =====
+RESULT:UNSAT
+
+===== uf75-017.cnf =====
+RESULT:SAT
+ASSIGNMENT:1=0 2=0 3=1 4=0 5=0 6=0 7=0 8=1 9=0 10=0 11=0 12=1 13=1 14=0 15=1 16=1 17=0 18=1 19=1 20=0 21=1 22=0 23=0 24=0 25=1 26=1 27=1 28=0 29=1 30=0 31=1 32=0 33=0 34=0 35=0 36=0 37=0 38=0 39=0 40=0 41=0 42=1 43=1 44=0 45=0 46=1 47=1 48=0 49=1 50=1 51=1 52=1 53=0 54=1 55=1 56=1 57=1 58=1 59=0 60=1 61=0 62=0 63=1 64=0 65=1 66=1 67=1 68=0 69=1 70=1 71=1 72=1 73=1 74=0 75=1 
+
+===== uf75-018.cnf =====
+RESULT:SAT
+ASSIGNMENT:1=1 2=1 3=1 4=1 5=1 6=1 7=1 8=1 9=1 10=0 11=0 12=0 13=0 14=1 15=1 16=0 17=1 18=0 19=0 20=0 21=0 22=0 23=0 24=1 25=0 26=1 27=1 28=1 29=0 30=0 31=0 32=1 33=0 34=1 35=1 36=1 37=1 38=0 39=1 40=0 41=1 42=1 43=1 44=0 45=0 46=0 47=0 48=1 49=1 50=1 51=0 52=0 53=1 54=1 55=0 56=0 57=0 58=1 59=0 60=1 61=0 62=1 63=1 64=1 65=1 66=0 67=0 68=0 69=0 70=1 71=0 72=1 73=0 74=0 75=1 
+
+===== uf75-019.cnf =====
+RESULT:UNSAT
+
+===== uf75-02.cnf =====
+RESULT:UNSAT
+
+===== uf75-020.cnf =====
+RESULT:UNSAT
+
+===== uf75-021.cnf =====
+RESULT:UNSAT
+
+===== uf75-022.cnf =====
+RESULT:UNSAT
+
+===== uf75-023.cnf =====
+RESULT:UNSAT
+
+===== uf75-024.cnf =====
+RESULT:UNSAT
+
+===== uf75-025.cnf =====
+RESULT:SAT
+ASSIGNMENT:1=1 2=1 3=1 4=1 5=1 6=1 7=0 8=0 9=0 10=1 11=0 12=0 13=1 14=1 15=0 16=1 17=0 18=1 19=1 20=0 21=0 22=1 23=1 24=1 25=1 26=1 27=1 28=1 29=1 30=0 31=1 32=1 33=1 34=0 35=0 36=0 37=1 38=1 39=1 40=1 41=1 42=0 43=1 44=1 45=0 46=1 47=1 48=0 49=1 50=0 51=1 52=0 53=1 54=0 55=1 56=1 57=0 58=1 59=0 60=0 61=0 62=0 63=0 64=0 65=0 66=1 67=0 68=1 69=1 70=0 71=0 72=0 73=0 74=0 75=1 
+
+===== uf75-026.cnf =====
+RESULT:UNSAT
+
+===== uf75-027.cnf =====
+RESULT:UNSAT
+
+===== uf75-028.cnf =====
+RESULT:UNSAT
+
+===== uf75-029.cnf =====
+RESULT:SAT
+ASSIGNMENT:1=1 2=0 3=0 4=0 5=0 6=0 7=1 8=0 9=1 10=0 11=0 12=1 13=0 14=0 15=1 16=0 17=1 18=0 19=1 20=1 21=0 22=1 23=0 24=0 25=0 26=0 27=0 28=1 29=0 30=0 31=0 32=0 33=0 34=0 35=0 36=0 37=1 38=1 39=0 40=0 41=0 42=1 43=0 44=0 45=0 46=1 47=1 48=1 49=0 50=0 51=1 52=1 53=0 54=0 55=0 56=1 57=0 58=1 59=0 60=0 61=0 62=0 63=1 64=0 65=0 66=0 67=0 68=0 69=1 70=1 71=1 72=0 73=0 74=0 75=0 
+
+===== uf75-03.cnf =====
+RESULT:UNSAT
+
+===== uf75-030.cnf =====
+
+
+===== uf75-031.cnf =====
+RESULT:UNSAT
+
+===== uf75-032.cnf =====
+RESULT:UNSAT
+
+===== uf75-033.cnf =====
+RESULT:UNSAT
+
+===== uf75-034.cnf =====
+RESULT:UNSAT
+
+===== uf75-035.cnf =====
+RESULT:UNSAT
+
+===== uf75-036.cnf =====
+RESULT:UNSAT
+
+===== uf75-037.cnf =====
+RESULT:UNSAT
+
+===== uf75-038.cnf =====
+RESULT:UNSAT
+
+===== uf75-039.cnf =====
+RESULT:UNSAT
+
+===== uf75-04.cnf =====
+RESULT:UNSAT
+
+===== uf75-040.cnf =====
+RESULT:UNSAT
+
+===== uf75-041.cnf =====
+RESULT:UNSAT
+
+===== uf75-042.cnf =====
+RESULT:UNSAT
+
+===== uf75-043.cnf =====
+RESULT:UNSAT
+
+===== uf75-044.cnf =====
+RESULT:UNSAT
+
+===== uf75-045.cnf =====
+RESULT:UNSAT
+
+===== uf75-046.cnf =====
+RESULT:UNSAT
+
+===== uf75-047.cnf =====
+RESULT:UNSAT
+
+===== uf75-048.cnf =====
+RESULT:UNSAT
+
+===== uf75-049.cnf =====
+RESULT:UNSAT
+
+===== uf75-05.cnf =====
+RESULT:UNSAT
+
+===== uf75-050.cnf =====
+RESULT:UNSAT
+
+===== uf75-051.cnf =====
+RESULT:UNSAT
+
+===== uf75-052.cnf =====
+RESULT:UNSAT
+
+===== uf75-053.cnf =====
+RESULT:UNSAT
+
+===== uf75-054.cnf =====
+RESULT:UNSAT
+
+===== uf75-055.cnf =====
+RESULT:UNSAT
+
+===== uf75-056.cnf =====
+RESULT:UNSAT
+
+===== uf75-057.cnf =====
+RESULT:UNSAT
+
+===== uf75-058.cnf =====
+RESULT:UNSAT
+
+===== uf75-059.cnf =====
+RESULT:UNSAT
+
+===== uf75-06.cnf =====
+RESULT:UNSAT
+
+===== uf75-060.cnf =====
+RESULT:UNSAT
+
+===== uf75-061.cnf =====
+RESULT:UNSAT
+
+===== uf75-062.cnf =====
+RESULT:UNSAT
+
+===== uf75-063.cnf =====
+RESULT:UNSAT
+
+===== uf75-064.cnf =====
+RESULT:UNSAT
+
+===== uf75-065.cnf =====
+RESULT:UNSAT
+
+===== uf75-066.cnf =====
+RESULT:UNSAT
+
+===== uf75-067.cnf =====
+RESULT:UNSAT
+
+===== uf75-068.cnf =====
+RESULT:UNSAT
+
+===== uf75-069.cnf =====
+RESULT:UNSAT
+
+===== uf75-07.cnf =====
+RESULT:UNSAT
+
+===== uf75-070.cnf =====
+RESULT:UNSAT
+
+===== uf75-071.cnf =====
+RESULT:UNSAT
+
+===== uf75-072.cnf =====
+RESULT:UNSAT
+
+===== uf75-073.cnf =====
+RESULT:UNSAT
+
+===== uf75-074.cnf =====
+RESULT:UNSAT
+
+===== uf75-075.cnf =====
+RESULT:UNSAT
+
+===== uf75-076.cnf =====
+RESULT:UNSAT
+
+===== uf75-077.cnf =====
+RESULT:UNSAT
+
+===== uf75-078.cnf =====
+RESULT:UNSAT
+
+===== uf75-079.cnf =====
+RESULT:UNSAT
+
+===== uf75-08.cnf =====
+RESULT:UNSAT
+
+===== uf75-080.cnf =====
+RESULT:UNSAT
+
+===== uf75-081.cnf =====
+RESULT:UNSAT
+
+===== uf75-082.cnf =====
+RESULT:UNSAT
+
+===== uf75-083.cnf =====
+RESULT:UNSAT
+
+===== uf75-084.cnf =====
+RESULT:UNSAT
+
+===== uf75-085.cnf =====
+RESULT:UNSAT
+
+===== uf75-086.cnf =====
+RESULT:UNSAT
+
+===== uf75-087.cnf =====
+RESULT:UNSAT
+
+===== uf75-088.cnf =====
+RESULT:UNSAT
+
+===== uf75-089.cnf =====
+RESULT:UNSAT
+
+===== uf75-09.cnf =====
+RESULT:UNSAT
+
+===== uf75-090.cnf =====
+RESULT:UNSAT
+
+===== uf75-091.cnf =====
+RESULT:UNSAT
+
+===== uf75-092.cnf =====
+RESULT:UNSAT
+
+===== uf75-093.cnf =====
+RESULT:UNSAT
+
+===== uf75-094.cnf =====
+RESULT:UNSAT
+
+===== uf75-095.cnf =====
+RESULT:UNSAT
+
+===== uf75-096.cnf =====
+RESULT:UNSAT
+
+===== uf75-097.cnf =====
+RESULT:UNSAT
+
+===== uf75-098.cnf =====
+RESULT:UNSAT
+
+===== uf75-099.cnf =====
+RESULT:UNSAT
+
