@@ -7,10 +7,10 @@
 #endif
 
 DPLLSolver::DPLLSolver(Formula f)
-    : _F(std::move(f)), _useWatched(std::getenv("SAT_USE_WATCHED") != nullptr),
-      _useCDCL(std::getenv("SAT_USE_CDCL") != nullptr),
-      _useDLIS(std::getenv("SAT_USE_DLIS") != nullptr),
-      _useVSIDS(std::getenv("SAT_USE_VSIDS") != nullptr), _lastConflict(false) {
+    : _F(std::move(f)), _useWatched(true),
+      _useCDCL(true),
+      _useDLIS(true),
+      _useVSIDS(true), _lastConflict(false) {
   initHeuristicFlags(); // tell heuristics which flags are on
   _A.resize(_F.maxVar());
   _F.initWatches(_A, _useWatched);
